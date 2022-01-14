@@ -11,15 +11,15 @@ This stack can be used for local development, staging, and production. If runnin
 Start Docker and then run ```docker-compose up -d``` to bring the stack up and detach it from stdout. Here are some basic commands.
 
 ```
-docker-compose up -d      # start services
+docker-compose up -d            # start services
 
-docker-compose ps         # view service info
+docker-compose ps               # view service info
 
-docker-compose logs nginx # view nginx logs 
+docker-compose logs nginx       # view nginx logs 
 
-docker-compose stop       # stop containers
+docker-compose stop             # stop containers
 
-docker-compose rm         # remove containers
+docker-compose rm               # remove containers
 ```
 
 ## Generate Local Certificates
