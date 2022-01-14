@@ -1,4 +1,4 @@
-# Wordpress Docker Stack
+# WordPress Docker Stack
 
 This Docker stack initializes WordPress, MariaDB, Redis for object caching, and a 3 node Elastic Search cluster.
 
