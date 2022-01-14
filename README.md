@@ -8,6 +8,8 @@ Step 1: You will need to generate ssl certificates in order to use this stack ei
 
 Step 2: Update your ```.env``` dotfile for the enviornment that your working in (development, staging, production).
 
+Step 3: Start docker and launch this stack using ```docker-compose```.
+
 ## Step 1: Development - Generate Local Certificates
 
 Install [mkcert](https://github.com/FiloSottile/mkcert#installation) and then run the mkcert command in the ```./certs``` directory. Update the environmental configuration for Nginx SSL as needed.
@@ -34,6 +36,12 @@ Download a copy your certificate and key from your certificate provider to ```./
 ## Step 2: Environment Configuration
 
 This stack can be configured for different environments using the ```.env``` dotfile. See ```.env-template``` for all variables available. Copy ```.env-template``` to ```.env``` and update as necessary. This is where you change database username and password, update nginx configuration, specify which docker image versions to use for each service, etc.
+
+### Step 3: Start Docker and Start Stack
+
+In a development environment, you can download [Docker Desktop](https://www.docker.com/products/docker-desktop). On other systems, you will need to install Docker Engine and start the dameon. 
+
+Once Docker has been started, you can issue ```docker-compose up -d``` and the stack will start. Please see below for more information on using docker-compose.
 ## Docker Compose Basics
 
 View the [docker-compose documentation.](https://docs.docker.com/compose/)
