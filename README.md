@@ -8,14 +8,12 @@ View the [docker-compose documentation.](https://docs.docker.com/compose/)
 
 This stack can be used for local development, staging, and production. If running locally, you will need to map domains in your os hosts file or use a tool like dnsmasq to map domains automatically. The development environment on this stack is configured to use https://wordpress.local. You will need to generate local certificates using ```mkcert``` in order to use https.
 
-Start Docker and then run ```docker-compose``` to bring the stack up.
-
-You can check your services by running ```docker-compose ps```.
-
-You can [view logs](https://docs.docker.com/compose/reference/logs/) for nginx, etc. by running ```docker-compose logs nginx```
+Start Docker and then run ```docker-compose up -d``` to bring the stack up and detach it from stdout.
 
 ```
-docker-compose up -d
+docker-compose up -d      # start services
+docker-compose ps         # view service info
+docker-compose logs nginx # view nginx logs 
 ```
 
 ## Generate Local Certificates
