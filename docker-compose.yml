@@ -1,0 +1,148 @@
+version: "3"
+
+services:
+
+  db:
+    image: mariadb:${MARIADB_VERSION:-10.7}
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: ${DB_NAME:-wordpress}
+      MYSQL_USER: ${DB_USER:-wordpress}
+      MYSQL_PASSWORD: ${DB_PASS:-password}
+    networks:
+      - backend
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:${WORDPRESS_VERSION:-fpm-alpine}
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${DB_PASS:-password}
+      WORDPRESS_DEBUG: ${WP_DEBUG:-1}
+      WORDPRESS_CONFIG_EXTRA: |
+        /* Redis Ojbect Cache */
+        define( 'WP_REDIS_HOST', 'redis' );
+        define( 'WP_REDIS_PORT', 6379 );
+    volumes:
+      - wordpress:/var/www/html
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./conf/${CONF_PHP:-php.dev.ini}:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - elastic
+      - frontend
+      - backend
+
+  es01:
+    image: elasticsearch:${ELASTIC_VERSION:-7.16.3}
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+
+  es02:
+    image: elasticsearch:${ELASTIC_VERSION:-7.16.3}
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata02:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+  es03:
+    image: elasticsearch:${ELASTIC_VERSION:-7.16.3}
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata03:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+  redis:
+    image: redis:${REDIS_VERSION:-alpine}
+    networks:
+      - backend
+  
+  nginx:
+    depends_on:
+      - wordpress
+    image: nginx:${NGINX_VERSION:-alpine}
+    restart: always
+    environment:
+      - NGINX_HOST=${NGINX_HOST:-wordpress.local}
+      - NGINX_HTTP=${NGINX_HTTP:-80}
+      - NGINX_HTTPS=${NGINX_HTTPS:-443}
+      - NGINX_CERT=${NGINX_CERT:-wordpress.local+1.pem}
+      - NGINX_KEY=${NGINX_KEY:-wordpress.local+1-key.pem}
+    volumes:
+      - ./templates:/etc/nginx/templates
+      - wordpress:/var/www/html
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./certs:/etc/ssl
+    ports:
+      - ${NGINX_HTTP:-80}:80
+      - ${NGINX_HTTPS:-443}:443 
+    networks:
+      - frontend
+
+volumes:
+  db_data: 
+    driver: local
+  wordpress:
+    driver: local
+  esdata01:
+    driver: local
+  esdata02: 
+    driver: local
+  esdata03:
+    driver: local
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+  elastic:
+    driver: bridge
