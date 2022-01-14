@@ -2,7 +2,7 @@
 
 This Docker stack initializes WordPress, MariaDB, Redis for object caching, and a 3 node Elastic Search cluster.
 
-## Docker Compose
+## Docker Compose Basics
 
 View the [docker-compose documentation.](https://docs.docker.com/compose/)
 
@@ -10,7 +10,9 @@ This stack can be used for local development, staging, and production. If runnin
 
 Start Docker and then run ```docker-compose``` to bring the stack up.
 
-You can view your services by running ```docker-compose ps```.
+You can check your services by running ```docker-compose ps```.
+
+You can [view logs](https://docs.docker.com/compose/reference/logs/) for nginx, etc. by running ```docker-compose logs nginx```
 
 ```
 docker-compose up -d
