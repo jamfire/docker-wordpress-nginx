@@ -1,9 +1,15 @@
 # sys files
 .DS_Store
 
+# stack files
+.env
+*.log
+*.bak
+
 # wordpress
-!wordpress/uploads
+wordpress/uploads/*
+!wordpress/uploads/.gitkeep
 
 # certs
-certs
-!certs/*
+certs/*
+!certs/.gitkeep
