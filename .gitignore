@@ -1,0 +1,9 @@
+# sys files
+.DS_Store
+
+# wordpress
+!wordpress/uploads
+
+# certs
+certs
+!certs/*
