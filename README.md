@@ -2,6 +2,38 @@
 
 This Docker stack initializes WordPress, MariaDB, Redis for object caching, and a 3 node Elastic Search cluster.
 
+# Initial Setup
+
+Step 1: You will need to generate ssl certificates in order to use this stack either locally or in production and then update ```.env``` environmental configuration with the appropriate variables.
+
+Step 2: Update your ```.env``` dotfile for the enviornment that your working in (development, staging, production).
+
+## Step 1: Development - Generate Local Certificates
+
+Install [mkcert](https://github.com/FiloSottile/mkcert#installation) and then run the mkcert command in the ```./certs``` directory. Update the environmental configuration for Nginx SSL as needed.
+
+```
+$ mkcert -install
+Created a new local CA 💥
+The local CA is now installed in the system trust store! ⚡️
+The local CA is now installed in the Firefox trust store (requires browser restart)! 🦊
+
+$ mkcert wordpress.local "*.wordpress.local"
+
+Created a new certificate valid for the following names 📜
+ - "wordpress.local"
+ - "*.wordpress.local"
+
+The certificate is at "./wordpress.local+1.pem" and the key at "./wordpress.local+1-key.pem" ✅
+```
+
+## Step 1: Production and Staging: Use SSL Certificates
+
+Download a copy your certificate and key from your certificate provider to ```./certs``` and update environment variables in ```.env``` as needed. The provided Nginx template in ```./templates/default.conf.template``` will use the certificates you specify in ```.env```.
+
+## Step 2: Environment Configuration
+
+This stack can be configured for different environments using the ```.env``` dotfile. See ```.env-template``` for all variables available. Copy ```.env-template``` to ```.env``` and update as necessary. This is where you change database username and password, update nginx configuration, specify which docker image versions to use for each service, etc.
 ## Docker Compose Basics
 
 View the [docker-compose documentation.](https://docs.docker.com/compose/)
@@ -21,30 +53,3 @@ docker-compose stop             # stop containers
 
 docker-compose rm               # remove containers
 ```
-
-## Generate Local Certificates
-
-Install [mkcert](https://github.com/FiloSottile/mkcert#installation) and then run the mkcert command in the ```./certs``` directory. Update the environmental configuration for Nginx SSL as needed.
-
-```
-$ mkcert -install
-Created a new local CA 💥
-The local CA is now installed in the system trust store! ⚡️
-The local CA is now installed in the Firefox trust store (requires browser restart)! 🦊
-
-$ mkcert wordpress.local "*.wordpress.local"
-
-Created a new certificate valid for the following names 📜
- - "wordpress.local"
- - "*.wordpress.local"
-
-The certificate is at "./wordpress.local+1.pem" and the key at "./wordpress.local+1-key.pem" ✅
-```
-
-## Use SSL Certificates
-
-Copy your certificate and key to ```./certs``` and update environment variables in ```.env``` as needed.
-
-## Environment Configuration
-
-This stack can be configured for different environments using the env dotfile. See ```.env-template``` for all variables available. This is where you change database username and password, update nginx configuration, specify which docker image versions to use for each service, etc.
