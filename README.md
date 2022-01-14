@@ -2,9 +2,15 @@
 
 This Docker stack initializes WordPress, MariaDB, Redis for object caching, and a 3 node Elastic Search cluster.
 
+## Docker Compose
+
+View the [docker-compose documentation.](https://docs.docker.com/compose/)
+
+This stack can be used for local development, staging, and production. If running locally, you will need to map domains in your os hosts file or use a tool like dnsmasq to map domains automatically. The development environment on this stack is configured to use https://wordpress.local. You will need to generate local certificates using ```mkcert``` in order to use https.
+
 ## Generate Local Certificates
 
-Install [mkcert](https://github.com/FiloSottile/mkcert#installation) and then run the mkcert command in your certs directory. Update the environmental configuration for Nginx SSL as needed.
+Install [mkcert](https://github.com/FiloSottile/mkcert#installation) and then run the mkcert command in the ```./certs``` directory. Update the environmental configuration for Nginx SSL as needed.
 
 ```
 $ mkcert -install
