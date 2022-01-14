@@ -40,3 +40,11 @@ Created a new certificate valid for the following names 📜
 
 The certificate is at "./wordpress.local+1.pem" and the key at "./wordpress.local+1-key.pem" ✅
 ```
+
+## Use SSL Certificates
+
+Copy your certificate and key to certs and update environment variables in ```.env``` as needed.
+
+## Environment Configuration
+
+This stack can be configured for different environments using the env dotfile. See ```.env-template``` for all variables available. This is where you change database username and password, update nginx configuration, specify which docker image versions to use for each service, etc.
