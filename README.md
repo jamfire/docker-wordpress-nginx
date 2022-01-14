@@ -43,7 +43,7 @@ The certificate is at "./wordpress.local+1.pem" and the key at "./wordpress.loca
 
 ## Use SSL Certificates
 
-Copy your certificate and key to certs and update environment variables in ```.env``` as needed.
+Copy your certificate and key to ```./certs``` and update environment variables in ```.env``` as needed.
 
 ## Environment Configuration
 
