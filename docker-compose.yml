@@ -34,6 +34,7 @@ services:
       - wordpress:/var/www/html
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./wordpress/uploads:/var/www/html/wp-content/uploads
       - ./conf/${CONF_PHP:-php.dev.ini}:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - elastic
@@ -120,6 +121,7 @@ services:
       - wordpress:/var/www/html
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./wordpress/uploads:/var/www/html/wp-content/uploads
       - ./certs:/etc/ssl
     ports:
       - ${NGINX_HTTP:-80}:80
