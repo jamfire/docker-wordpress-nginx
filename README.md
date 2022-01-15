@@ -58,10 +58,10 @@ This will start the main stack without elastic search.
 docker-compose up -d
 ```
 
-This will start the main stack with elastic search.
+This will start the main stack with elastic search by chaining multiple compose files together.
 
 ```
-docker compose up -f docker-compose.yml docker compose docker-compose.elastic.yml -d
+docker compose up -f docker-compose.yml -f docker-compose.elastic.yml -d
 ```
 
 **Common Docker Compose Commands**
