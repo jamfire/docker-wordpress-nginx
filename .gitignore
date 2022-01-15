@@ -6,10 +6,6 @@
 *.log
 *.bak
 
-# wordpress
-wordpress/uploads/*
-!wordpress/uploads/.gitkeep
-
 # certs
 certs/*
 !certs/.gitkeep

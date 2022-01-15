@@ -31,80 +31,29 @@ services:
         define( 'WP_REDIS_HOST', 'redis' );
         define( 'WP_REDIS_PORT', 6379 );
     volumes:
-      - wordpress:/var/www/html
+      - wp_core:/var/www/html
+      - wp_uploads:/var/www/html/wp-content/uploads
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
-      - ./wordpress/uploads:/var/www/html/wp-content/uploads
       - ./conf/${CONF_PHP:-php.dev.ini}:/usr/local/etc/php/conf.d/custom.ini
     networks:
-      - elastic
       - frontend
       - backend
 
-  es01:
-    image: elasticsearch:${ELASTIC_VERSION:-7.16.3}
-    container_name: es01
-    environment:
-      - node.name=es01
-      - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+  wpcli:
+    depends_on:
+      - db
+      - wordpress
+    image: wordpress:cli
+    user: xfs
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-    networks:
-      - elastic
-
-  es02:
-    image: elasticsearch:${ELASTIC_VERSION:-7.16.3}
-    container_name: es02
-    environment:
-      - node.name=es02
-      - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es01,es03
-      - cluster.initial_master_nodes=es01,es02,es03
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata02:/usr/share/elasticsearch/data
-    networks:
-      - elastic
-
-  es03:
-    image: elasticsearch:${ELASTIC_VERSION:-7.16.3}
-    container_name: es03
-    environment:
-      - node.name=es03
-      - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es01,es02
-      - cluster.initial_master_nodes=es01,es02,es03
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata03:/usr/share/elasticsearch/data
-    networks:
-      - elastic
-
-  redis:
-    image: redis:${REDIS_VERSION:-alpine}
+      - wp_core:/var/www/html
+      - wp_uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
     networks:
       - backend
-  
+
   nginx:
     depends_on:
       - wordpress
@@ -117,11 +66,11 @@ services:
       - NGINX_CERT=${NGINX_CERT:-wordpress.local+1.pem}
       - NGINX_KEY=${NGINX_KEY:-wordpress.local+1-key.pem}
     volumes:
-      - ./templates:/etc/nginx/templates
-      - wordpress:/var/www/html
+      - wp_core:/var/www/html
+      - wp_uploads:/var/www/html/wp-content/uploads
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
-      - ./wordpress/uploads:/var/www/html/wp-content/uploads
+      - ./templates:/etc/nginx/templates
       - ./certs:/etc/ssl
     ports:
       - ${NGINX_HTTP:-80}:80
@@ -129,22 +78,21 @@ services:
     networks:
       - frontend
 
+  redis:
+    image: redis:${REDIS_VERSION:-alpine}
+    networks:
+      - backend
+
 volumes:
   db_data: 
     driver: local
-  wordpress:
+  wp_core:
     driver: local
-  esdata01:
+  wp_uploads:
     driver: local
-  esdata02: 
-    driver: local
-  esdata03:
-    driver: local
-
+    
 networks:
   frontend:
     driver: bridge
   backend:
-    driver: bridge
-  elastic:
     driver: bridge

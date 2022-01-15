@@ -44,11 +44,27 @@ In a development environment, you can download [Docker Desktop](https://www.dock
 Once Docker has been started, you can issue ```docker-compose up -d``` and the stack will start. Please see below for more information on using docker-compose.
 ## Docker Compose Basics
 
-View the [docker-compose documentation.](https://docs.docker.com/compose/)
+View the [docker compose documentation.](https://docs.docker.com/compose/)
 
 This stack can be used for local development, staging, and production. If running locally, you will need to map domains in your os hosts file or use a tool like dnsmasq to map domains automatically. The development environment on this stack is configured to use https://wordpress.local. You will need to generate local certificates using ```mkcert``` in order to use https.
 
-Start Docker and then run ```docker-compose up -d``` to bring the stack up and detach it from stdout. Here are some basic commands.
+Start Docker and then run ```docker compose up -d``` to bring the stack up and detach it from stdout. Here are some basic commands.
+
+If you need to start the elastic search services you have two options. You can start them together with WordPress or separately.
+
+This will start the main stack without elastic search.
+
+```
+docker-compose up -d
+```
+
+This will start the main stack with elastic search.
+
+```
+docker compose up -f docker-compose.yml docker compose docker-compose.elastic.yml -d
+```
+
+**Common Docker Compose Commands**
 
 ```
 docker-compose up -d            # start services
