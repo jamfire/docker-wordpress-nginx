@@ -92,7 +92,7 @@ abstract class CursorBasedIterator implements \Iterator
     {
         $options = array();
 
-        if (strlen(strval($this->match)) > 0) {
+        if (strlen($this->match) > 0) {
             $options['MATCH'] = $this->match;
         }
 
@@ -139,7 +139,6 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->reset();
@@ -149,7 +148,6 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
@@ -158,7 +156,6 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -167,7 +164,6 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function next()
     {
         tryFetch: {
@@ -188,7 +184,6 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function valid()
     {
         return $this->valid;

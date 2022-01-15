@@ -146,14 +146,14 @@ class SentinelReplication implements ReplicationInterface
     }
 
     /**
-     * Sets the time to wait (in milliseconds) before fetching a new configuration
+     * Sets the time to wait (in seconds) before fetching a new configuration
      * from one of the sentinels.
      *
-     * @param float $milliseconds Time to wait before the next attempt.
+     * @param float $seconds Time to wait before the next attempt.
      */
-    public function setRetryWait($milliseconds)
+    public function setRetryWait($seconds)
     {
-        $this->retryWait = (float) $milliseconds;
+        $this->retryWait = (float) $seconds;
     }
 
     /**

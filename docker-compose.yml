@@ -18,7 +18,10 @@ services:
   wordpress:
     depends_on:
       - db
-    image: wordpress:${WORDPRESS_VERSION:-fpm-alpine}
+    # image: wordpress:${WORDPRESS_VERSION:-fpm-alpine}
+    build: .
+    image: jamfire:wordpress-fpm-alpine
+    user: xfs
     restart: always
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -33,6 +36,7 @@ services:
     volumes:
       - wp_core:/var/www/html
       - wp_uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/mu-plugins:/var/www/html/wp-content/mu-plugins 
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
       - ./conf/${CONF_PHP:-php.dev.ini}:/usr/local/etc/php/conf.d/custom.ini
@@ -46,9 +50,19 @@ services:
       - wordpress
     image: wordpress:cli
     user: xfs
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${DB_PASS:-password}
+      WORDPRESS_CONFIG_EXTRA: |
+        /* Redis Ojbect Cache */
+        define( 'WP_REDIS_HOST', 'redis' );
+        define( 'WP_REDIS_PORT', 6379 );
     volumes:
       - wp_core:/var/www/html
       - wp_uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/mu-plugins:/var/www/html/wp-content/mu-plugins
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
     networks:
@@ -68,6 +82,7 @@ services:
     volumes:
       - wp_core:/var/www/html
       - wp_uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/mu-plugins:/var/www/html/wp-content/mu-plugins
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
       - ./templates:/etc/nginx/templates
@@ -82,6 +97,8 @@ services:
     image: redis:${REDIS_VERSION:-alpine}
     networks:
       - backend
+    volumes:
+      - redis_data:/data
 
 volumes:
   db_data: 
@@ -90,7 +107,9 @@ volumes:
     driver: local
   wp_uploads:
     driver: local
-    
+  redis_data:
+    driver: local
+
 networks:
   frontend:
     driver: bridge

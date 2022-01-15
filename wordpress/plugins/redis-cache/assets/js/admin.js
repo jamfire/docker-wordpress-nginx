@@ -42,7 +42,7 @@
             },
             chart: {
                 type: 'line',
-                height: $( '#metrics-pane #widget-redis-stats' ).length ? '300px' : '100%',
+                height: '100%',
                 toolbar: { show: false },
                 zoom: { enabled: false },
                 animations: { enabled: false },
@@ -412,7 +412,7 @@
             render_chart( 'time' );
         }
 
-        $( '#widget-redis-stats ul a[data-chart]' ).on(
+        $( '#widget-redis-stats ul a' ).on(
             'click.redis-cache',
             function ( event ) {
                 event.preventDefault();
@@ -441,35 +441,6 @@
                 } );
             }
         );
-
-        if ( $( '#redis-cache-copy-button' ).length ) {
-            if ( typeof ClipboardJS === 'undefined' ) {
-                $( '#redis-cache-copy-button' ).remove();
-            } else {
-                var successTimeout;
-                var clipboard = new ClipboardJS( '#redis-cache-copy-button .copy-button' );
-
-                clipboard.on( 'success', function( e ) {
-                    var triggerElement = $( e.trigger ),
-                        successElement = $( '.success', triggerElement.closest( 'div' ) );
-
-                    e.clearSelection();
-                    triggerElement.trigger( 'focus' );
-
-                    clearTimeout( successTimeout );
-                    successElement.removeClass( 'hidden' );
-
-                    successTimeout = setTimeout( function() {
-                        successElement.addClass( 'hidden' );
-
-                        if ( clipboard.clipboardAction.fakeElem && clipboard.clipboardAction.removeFake ) {
-                            clipboard.clipboardAction.removeFake();
-                        }
-                    }, 3000 );
-
-                } );
-            }
-        }
     });
 
 } ( window[ rediscache.jQuery ], window ) );

@@ -3,7 +3,7 @@
  * Plugin Name: Redis Object Cache Drop-In
  * Plugin URI: http://wordpress.org/plugins/redis-cache/
  * Description: A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, Credis, HHVM, replication, clustering and WP-CLI.
- * Version: 2.0.22
+ * Version: 2.0.21
  * Author: Till Krüss
  * Author URI: https://objectcache.pro
  * License: GPLv3
@@ -494,11 +494,7 @@ class WP_Object_Cache {
             }
 
             if ( defined( 'WP_REDIS_CLUSTER' ) ) {
-                $connectionID = current( array_values( WP_REDIS_CLUSTER ) );
-
-                $this->diagnostics[ 'ping' ] = ($client === 'predis')
-                    ? $this->redis->getClientFor( $connectionID )->ping()
-                    : $this->redis->ping( $connectionID );
+                $this->diagnostics[ 'ping' ] = $this->redis->ping( current( array_values( WP_REDIS_CLUSTER ) ) );
             } else {
                 $this->diagnostics[ 'ping' ] = $this->redis->ping();
             }
@@ -616,7 +612,7 @@ class WP_Object_Cache {
                 'host' => $parameters['host'],
                 'port' => $parameters['port'],
                 'timeout' => $parameters['timeout'],
-                '',
+                null,
                 'retry_interval' => $parameters['retry_interval'],
             ];
 
@@ -645,7 +641,7 @@ class WP_Object_Cache {
             }
 
             if ( isset( $parameters['database'] ) ) {
-                if ( ctype_digit( (string) $parameters['database'] ) ) {
+                if ( ctype_digit( $parameters['database'] ) ) {
                     $parameters['database'] = (int) $parameters['database'];
                 }
 
@@ -904,7 +900,7 @@ class WP_Object_Cache {
         }
 
         if ( isset( $parameters['database'] ) ) {
-            if ( ctype_digit( (string) $parameters['database'] ) ) {
+            if ( ctype_digit( $parameters['database'] ) ) {
                 $parameters['database'] = (int) $parameters['database'];
             }
 
@@ -2193,7 +2189,7 @@ LUA;
      * @param mixed $expiration  Incoming expiration value (whatever it is).
      */
     protected function validate_expiration( $expiration ) {
-        $expiration = is_int( $expiration ) || ctype_digit( (string) $expiration ) ? (int) $expiration : 0;
+        $expiration = is_int( $expiration ) || ctype_digit( $expiration ) ? (int) $expiration : 0;
 
         if ( defined( 'WP_REDIS_MAXTTL' ) ) {
             $max = (int) WP_REDIS_MAXTTL;

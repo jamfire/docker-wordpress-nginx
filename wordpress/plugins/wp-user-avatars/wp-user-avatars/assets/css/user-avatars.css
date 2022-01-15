@@ -1,0 +1,158 @@
+#wp-user-avatars-photo {
+	width: 90px;
+}
+
+#normal-sortables #user_avatar img,
+#wp-user-avatars-user-settings img {
+	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	height: 90px;
+	width: 90px;
+}
+
+#wp-user-avatars-actions div,
+#wp-user-avatars-actions input[type=file] {
+	text-overflow: ellipsis;
+	width: 100%;
+}
+#wp-user-avatars-actions input[type=file] {
+	margin: 0 0 10px;
+}
+
+/**
+ * Special styling for wide screens
+ */
+@media screen and ( min-width: 1110px ) {
+	#your-profile {
+		position: relative;
+	}
+
+	#your-profile > table {
+		margin-right: 390px;
+		width: auto;
+	}
+
+	#wp-user-avatars-user-settings {
+		position: absolute;
+		top: 0px;
+		right: 0;
+		width: 390px;
+		border: 1px solid #e5e5e5;
+		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+		box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+		background: #fff;
+	}
+
+	#wp-user-avatars-user-settings label {
+		font-size: 13px;
+	}
+	#wp-user-avatars-user-settings br,
+	#wp-user-avatars-user-settings .wp-user-avatar-rating-description,
+	#wp-user-avatars-user-settings .fancy-hidden {
+		display: none;
+	}
+
+	#wp-user-avatars-ratings fieldset {
+		padding-left: 110px;
+	}
+
+	#wp-user-avatars-user-settings .wp-user-avatar-rating {
+		margin-right: 15px;
+	}
+
+	#wp-user-avatars-user-settings h2 {
+		font-size: 14px;
+		padding: 8px 12px;
+		margin: 0;
+		line-height: 1.4;
+		border-bottom: 1px solid #eee;
+	}
+
+	#wp-user-avatars-user-settings table {
+		margin: 0;
+		padding: 0;
+	}
+	#wp-user-avatars-user-settings th {
+		display: none;
+	}
+
+	#wp-user-avatars-user-settings td {
+		padding: 10px;
+	}
+
+	#wp-user-avatars-user-settings p.submit {
+		margin: 0;
+		padding: 10px;
+		border-top: 1px solid #ddd;
+		background-color: #f5f5f5;
+		text-align: right;
+	}
+
+	/* BuddyPress Support */
+	body.buddypress #wp-user-avatars-user-settings {
+		top: 60px;
+	}
+}
+
+/* WP User Profiles Support */
+tr.user-profile-picture,
+#side-sortables #user-avatar br,
+#side-sortables #user-avatar .wp-user-avatar-rating-description,
+#side-sortables #user-avatar .fancy-hidden {
+	display: none;
+}
+
+#normal-sortables #wp-user-avatars-ratings fieldset,
+#side-sortables #wp-user-avatars-ratings fieldset {
+	padding-left: 0;
+}
+
+#side-sortables #user-avatar .wp-user-avatar-rating {
+	margin-right: 20px;
+}
+
+#side-sortables #user-avatar img {
+	-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+	height: 125px;
+	width: 125px;
+}
+
+#side-sortables #user-avatar h3 {
+	font-size: 14px;
+	padding: 8px 12px;
+	margin: 0;
+	line-height: 1.4;
+	border-bottom: 1px solid #eee;
+}
+
+#side-sortables #user-avatar table {
+	margin: 0;
+	padding: 0;
+}
+#side-sortables #user-avatar th {
+	display: none;
+}
+
+#side-sortables #user-avatar td {
+	padding: 15px 0 0 0;
+	margin-bottom: 0;
+}
+
+#side-sortables #wp-user-avatars-photo,
+#side-sortables #wp-user-avatars-actions {
+	float: left;
+	width: 100%;
+}
+
+#side-sortables #wp-user-avatars-photo {
+	text-align: center;
+}
+
+#side-sortables #user-avatar p.submit {
+	margin: 0;
+	padding: 10px;
+	border-top: 1px solid #ddd;
+	background-color: #f5f5f5;
+	text-align: right;
+}
