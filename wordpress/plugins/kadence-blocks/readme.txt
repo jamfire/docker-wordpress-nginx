@@ -1,10 +1,10 @@
 === Gutenberg Blocks by Kadence Blocks – Page Builder Features ===
-Contributors: britner
+Contributors: britner, oakesjosh
 Tags: gutenberg, blocks, page builder, google fonts, dual buttons, svg icons, editor width,
 Donate link: https://www.kadencewp.com/about-us/
 Requires at least: 5.8
 Tested up to: 5.8
-Stable tag: 2.1.19
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,19 @@ Install the plugin into the `/wp-content/plugins/` folder, and activate it.
 6. Editor Width settings inside Gutenberg
 
 == Changelog ==
+
+= 2.2.0 =
+Release Date: January 14th, 2022
+* Add: Advanced Image Block.
+* Add: Flex Wrapping options for section block.
+* Update: add more tablet and mobile live previews in editor.
+* Update: Background Attachment desktop only notice.
+* Update: Add more clear defaults options.
+* Fix: Previews in table of content block.
+* Fix: Tab title incorrectly showing in editor when using only icon mode.
+* Fix: Issue with form submit font unit.
+* Fix: RTL tabs styling issue.
+* Fix: Issue with Table of Contents and special characters
 
 = 2.1.19 =
 Release Date: December 16th, 2021

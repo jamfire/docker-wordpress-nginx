@@ -187,6 +187,8 @@ class WP_User_Profile_Section {
 	 * Saving this section?
 	 *
 	 * @since 0.2.0
+	 *
+	 * @return WP_User
 	 */
 	public function action_save( $user = null ) {
 
@@ -247,16 +249,20 @@ class WP_User_Profile_Section {
 	 * @since 0.2.0
 	 *
 	 * @param WP_User $user
+	 * @return mixed Integer on success. WP_Error on failure.
 	 */
 	public function save( $user = null ) {
 
 		// Allow third party plugins to hook into this sections saving process
 		$user = apply_filters( "wp_user_profiles_save_{$this->id}_section", $user );
 
-		// Return errors if there are any
-		if ( is_wp_error( $user ) && $user->get_error_codes() ) {
-			return $user;
+		// Return (do not update) if there are any errors
+		if ( $this->errors->get_error_codes() || ( is_wp_error( $user ) && $user->get_error_codes() ) ) {
+			return $this->errors;
 		}
+
+		// Pre-clean the cache before updating
+		clean_user_cache( $user );
 
 		// Update the user in the database
 		return wp_update_user( $user );

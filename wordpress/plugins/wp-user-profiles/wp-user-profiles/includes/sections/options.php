@@ -60,6 +60,7 @@ class WP_User_Profile_Options_Section extends WP_User_Profile_Section {
 	 * @since 0.2.0
 	 *
 	 * @param WP_User $user
+	 * @return mixed Integer on success. WP_Error on failure.
 	 */
 	public function save( $user = null ) {
 
@@ -89,7 +90,7 @@ class WP_User_Profile_Options_Section extends WP_User_Profile_Section {
 			: 0;
 
 		// Allow third party plugins to save data in this section
-		parent::save( $user );
+		return parent::save( $user );
 	}
 
 	/**

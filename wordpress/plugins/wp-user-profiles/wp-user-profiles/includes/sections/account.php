@@ -92,7 +92,8 @@ class WP_User_Profile_Account_Section extends WP_User_Profile_Section {
 	 *
 	 * @since 0.2.0
 	 *
-	 * @param  WP_User  $user
+	 * @param WP_User $user
+	 * @return mixed Integer on success. WP_Error on failure.
 	 */
 	public function save( $user = null ) {
 
@@ -159,13 +160,8 @@ class WP_User_Profile_Account_Section extends WP_User_Profile_Section {
 			}
 		}
 
-		// Bail if password change errors occurred
-		if ( $this->errors->get_error_code() ) {
-			return $this->errors;
-		}
-
 		// Allow third party plugins to save data in this section
-		parent::save( $user );
+		return parent::save( $user );
 	}
 
 	/**
