@@ -61,7 +61,7 @@ docker-compose up -d
 This will start the main stack with elastic search by chaining multiple compose files together.
 
 ```
-docker compose up -f docker-compose.yml -f docker-compose.elastic.yml -d
+docker compose -f docker-compose.yml -f docker-compose.elastic.yml up -d
 ```
 
 **Common Docker Compose Commands**
