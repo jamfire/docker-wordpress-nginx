@@ -76,3 +76,7 @@ docker-compose stop             # stop containers
 
 docker-compose rm               # remove containers
 ```
+
+## Deploy Static Docker Image
+
+A Dockerfile is included for CI/CD purposes. After you added themes and plugins in development, you can build an image to be deployed to staging and production.
