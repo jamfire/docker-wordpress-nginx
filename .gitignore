@@ -15,3 +15,4 @@ wordpress/plugins/hello.php
 wordpress/plugins/wordpress-admin-style
 wordpress/plugins/push-sync
 wordpress/themes/twenty*
+!wordpress/themes/twentytwentyone
