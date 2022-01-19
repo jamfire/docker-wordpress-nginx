@@ -32,7 +32,9 @@ services:
         define( 'WP_REDIS_PORT', 6379 );
     volumes:
       - wp_core:/var/www/html
-      - wp_uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./wordpress/uploads:/var/www/html/wp-content/uploads
       - ./conf/${CONF_PHP:-php.dev.ini}:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - frontend
@@ -55,7 +57,9 @@ services:
         define( 'WP_REDIS_PORT', 6379 );
     volumes:
       - wp_core:/var/www/html
-      - wp_uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./wordpress/uploads:/var/www/html/wp-content/uploads
     networks:
       - backend
 
@@ -72,7 +76,9 @@ services:
       - NGINX_KEY=${NGINX_KEY:-wordpress.local+1-key.pem}
     volumes:
       - wp_core:/var/www/html
-      - wp_uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./wordpress/uploads:/var/www/html/wp-content/uploads
       - ./templates:/etc/nginx/templates
       - ./certs:/etc/ssl
     ports:
@@ -93,8 +99,6 @@ volumes:
   db_data: 
     driver: local
   wp_core:
-    driver: local
-  wp_uploads:
     driver: local
   redis_data:
     driver: local
