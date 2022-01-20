@@ -11,4 +11,4 @@ COPY wordpress/plugins /usr/src/wordpress/wp-content/plugins
 COPY wordpress/themes /usr/src/wordpress/wp-content/themes
 
 # ensure permissions are correct
-RUN chown -R www-data:www-data /usr/src/wordpress
+# RUN chown -R www-data:www-data /var/www/html

@@ -1,18 +1,17 @@
-# sys files
-.DS_Store
-
-# stack files
+# system files
 .env
 *.log
 *.bak
+.DS_Store
 
 # certs
 certs/*
 !certs/.gitkeep
 
-# wordpress overrides
-wordpress/plugins/hello.php
+# wordpress plugins
 wordpress/plugins/wordpress-admin-style
 wordpress/plugins/push-sync
+
+# wordpress themes
 wordpress/themes/twenty*
 !wordpress/themes/twentytwentyone
