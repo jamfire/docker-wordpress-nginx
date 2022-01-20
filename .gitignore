@@ -2,6 +2,10 @@
 .env
 *.log
 *.bak
+*.sql
+*.tar
+*.tar.gz
+*.zip
 .DS_Store
 
 # certs
@@ -15,3 +19,7 @@ wordpress/plugins/push-sync
 # wordpress themes
 wordpress/themes/twenty*
 !wordpress/themes/twentytwentyone
+
+# wordpress uploads
+wordpress/uploads/*
+!wordpress/uploads/.gitkeep
