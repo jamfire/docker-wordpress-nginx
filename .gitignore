@@ -19,7 +19,3 @@ wordpress/plugins/push-sync
 # wordpress themes
 wordpress/themes/twenty*
 !wordpress/themes/twentytwentyone
-
-# wordpress uploads
-wordpress/uploads/*
-!wordpress/uploads/.gitkeep
