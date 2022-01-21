@@ -2,21 +2,62 @@ version: "3"
 
 services:
 
-  db:
-    image: mariadb:${MARIADB_VERSION:-10.7}
-    container_name: db
+  # Traefik Reverse Proxy and SSL Management
+  # Traefik will reverse proxy requests to different applications in the stack.
+  # This application is composed of one single frontend application, WordPress. If
+  # you wanted to expose more applications, for example, phpmyadmin, portainer, etc,
+  # you could add the appropriate traefik labels to those services, and traefik will
+  # automatically add ssl through ssl (unless you manually supply ssl certs) and
+  # exposeing them to the frontend.
+  traefik:
+    image: traefik:v2.6
+    container_name: traefik
+    restart: always
+    command:
+      - --accesslog
+      - --api.insecure=true
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
     volumes:
-      - db_data:/var/lib/mysql
-      - ./conf/my.cnf:/etc/mysql/conf.d/custom.cnf
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    networks:
+      - traefik
+
+  # Nginx
+  # Nginx is being used to reverse proxy to the php-fpm process being
+  # served by the WordPress service. It also passes static asset requests 
+  # from Traefik to to WordPress.
+  nginx:
+    depends_on:
+      - wordpress
+    image: nginx:${NGINX_VERSION:-alpine}
+    container_name: nginx
     restart: always
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_DATABASE: ${DB_NAME:-wordpress}
-      MYSQL_USER: ${DB_USER:-wordpress}
-      MYSQL_PASSWORD: ${DB_PASS:-password}
+      - NGINX_HOST=${NGINX_HOST:-wordpress.local}
+      - NGINX_HTTP=${NGINX_HTTP:-80}
+      - NGINX_HTTPS=${NGINX_HTTPS:-443}
+      - NGINX_CERT=${NGINX_CERT:-wordpress.local+1.pem}
+      - NGINX_KEY=${NGINX_KEY:-wordpress.local+1-key.pem}
+    volumes:
+      - wp_data:/var/www/html
+      - ./templates:/etc/nginx/templates
+    expose: 
+      - 80
+    labels: 
+      - traefik.enable=true
+      - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST}`)
     networks:
-      - backend
+      - traefik
+      - wordpress
 
+  # WordPress FPM
+  # This is the WordPress service with php-fpm. It could be replaced with the
+  # Apache WordPress image but Nginx typically offers better static file performance.
   wordpress:
     depends_on:
       - db
@@ -39,9 +80,12 @@ services:
       - ./conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
       - ~/.ssh/id_rsa/:/root/.ssh/id_rsa
     networks:
-      - frontend
-      - backend
+      - wordpress
 
+  # WordPress CLI
+  # Manage your WordPress installation with the WP CLI. Under the scripts folder,
+  # this service is being used to sync the database and uploads from a production 
+  # server.
   wpcli:
     depends_on:
       - db
@@ -61,38 +105,33 @@ services:
     volumes:
       - wp_data:/var/www/html
     networks:
-      - backend
-
-  nginx:
-    depends_on:
       - wordpress
-    image: nginx:${NGINX_VERSION:-alpine}
-    container_name: nginx
+
+  # MariaDB
+  # This MariaDB service adds a database for the WordPress application.
+  db:
+    image: mariadb:${MARIADB_VERSION:-10.7}
+    container_name: db
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./conf/my.cnf:/etc/mysql/conf.d/custom.cnf
     restart: always
     environment:
-      - NGINX_HOST=${NGINX_HOST:-wordpress.local}
-      - NGINX_HTTP=${NGINX_HTTP:-80}
-      - NGINX_HTTPS=${NGINX_HTTPS:-443}
-      - NGINX_CERT=${NGINX_CERT:-wordpress.local+1.pem}
-      - NGINX_KEY=${NGINX_KEY:-wordpress.local+1-key.pem}
-    volumes:
-      - wp_data:/var/www/html
-      - ./templates:/etc/nginx/templates
-      - ./certs:/etc/ssl
-    ports:
-      - ${NGINX_HTTP:-80}:80
-      - ${NGINX_HTTPS:-443}:443 
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: ${DB_NAME:-wordpress}
+      MYSQL_USER: ${DB_USER:-wordpress}
+      MYSQL_PASSWORD: ${DB_PASS:-password}
     networks:
-      - frontend
+      - wordpress
 
   redis:
     image: redis:${REDIS_VERSION:-alpine}
     container_name: redis
     restart: always
-    networks:
-      - backend
     volumes:
       - redis_data:/data
+    networks:
+      - wordpress
 
 volumes:
   db_data: 
@@ -104,11 +143,10 @@ volumes:
   redis_data:
     driver: local
     name: wordpress-redis
-
 networks:
-  frontend:
+  traefik:
     driver: bridge
-    name: wordpress-frontend
-  backend:
+    name: traefik
+  wordpress:
     driver: bridge
-    name: wordpress-backend
+    name: wordpress

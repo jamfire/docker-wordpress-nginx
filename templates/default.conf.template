@@ -4,23 +4,9 @@ upstream php {
 }
 
 server {
-    listen          ${NGINX_HTTP};
-    listen          [::]:${NGINX_HTTP};
+    listen          80;
+    listen          [::]:80;
     server_name     ${NGINX_HOST};
-    return          301 https://$host$request_uri;
-}
-
-server {
-    listen          ${NGINX_HTTPS}         ssl http2;
-    listen          [::]:${NGINX_HTTPS}    ssl http2;
-    server_name     ${NGINX_HOST};
-
-    ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
-    ssl_prefer_server_ciphers on;
-    ssl_ciphers               "ECDH+AESGCM:ECDH+AES256:ECDH+AES128:!ADH:!AECDH:!MD5;";
-
-    ssl_certificate           /etc/ssl/${NGINX_CERT};
-    ssl_certificate_key       /etc/ssl/${NGINX_KEY};
 
     root /var/www/html;
 
