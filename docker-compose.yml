@@ -18,6 +18,8 @@ services:
       - --api.insecure=true
       - --providers.docker
       - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web-secure.address=:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
@@ -51,6 +53,7 @@ services:
     labels: 
       - traefik.enable=true
       - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST}`)
+      - traefik.http.routers.wordpress.tls=true
     networks:
       - traefik
       - wordpress
