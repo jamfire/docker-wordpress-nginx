@@ -19,10 +19,9 @@ services:
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
-      - --entrypoints.web-secure.address=:443
-      # automatic tls termination
-      - --certificatesresolvers.le.acme.email=${LE_EMAIL}
-      - --certificatesresolvers.le.acme.storage=/acme
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.email=${LE_EMAIL:-email@example.com}
+      - --certificatesresolvers.le.acme.storage=/acme.json
       - --certificatesresolvers.le.acme.tlschallenge=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -45,10 +44,6 @@ services:
     restart: always
     environment:
       - NGINX_HOST=${NGINX_HOST:-wordpress.local}
-      - NGINX_HTTP=${NGINX_HTTP:-80}
-      - NGINX_HTTPS=${NGINX_HTTPS:-443}
-      - NGINX_CERT=${NGINX_CERT:-wordpress.local+1.pem}
-      - NGINX_KEY=${NGINX_KEY:-wordpress.local+1-key.pem}
     volumes:
       - wp_data:/var/www/html
       - ./templates:/etc/nginx/templates
@@ -144,13 +139,13 @@ services:
 volumes:
   db_data: 
     driver: local
-    name: wordpress-db-data
+    name: ${PROJECT:-wordpress}_wordpress-db-data
   wp_data:
     driver: local
-    name: wordpress-data
+    name: ${PROJECT:-wordpress}_wordpress-data
   redis_data:
     driver: local
-    name: wordpress-redis
+    name: ${PROJECT:-wordpress}_wordpress-redis
 networks:
   traefik:
     driver: bridge
