@@ -10,8 +10,8 @@ services:
   # automatically add ssl through ssl (unless you manually supply ssl certs) and
   # exposeing them to the frontend.
   traefik:
-    image: traefik:v2.6
-    container_name: traefik
+    image: traefik:${TRAEFIK_VERSION:-v2.6}
+    container_name: ${PROJECT:-wordpress}_traefik
     restart: always
     command:
       - --accesslog
@@ -20,6 +20,10 @@ services:
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
       - --entrypoints.web-secure.address=:443
+      # automatic tls termination
+      - --certificatesresolvers.le.acme.email=${LE_EMAIL}
+      - --certificatesresolvers.le.acme.storage=/acme
+      - --certificatesresolvers.le.acme.tlschallenge=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
@@ -37,7 +41,7 @@ services:
     depends_on:
       - wordpress
     image: nginx:${NGINX_VERSION:-alpine}
-    container_name: nginx
+    container_name: ${PROJECT:-wordpress}_nginx
     restart: always
     environment:
       - NGINX_HOST=${NGINX_HOST:-wordpress.local}
@@ -54,6 +58,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST}`)
       - traefik.http.routers.wordpress.tls=true
+      - traefik.http.routers.wordpress.tls.certresolver=le
     networks:
       - traefik
       - wordpress
@@ -66,7 +71,7 @@ services:
       - db
     build: ./wordpress
     image: wordpress-fpm:production
-    container_name: wordpress
+    container_name: ${PROJECT:-wordpress}_wordpress
     restart: always
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -94,7 +99,7 @@ services:
       - db
       - wordpress
     image: wordpress:cli
-    container_name: wpcli
+    container_name: ${PROJECT:-wordpress}_wpcli
     user: xfs
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -114,7 +119,7 @@ services:
   # This MariaDB service adds a database for the WordPress application.
   db:
     image: mariadb:${MARIADB_VERSION:-10.7}
-    container_name: db
+    container_name: ${PROJECT:-wordpress}_db
     volumes:
       - db_data:/var/lib/mysql
       - ./conf/my.cnf:/etc/mysql/conf.d/custom.cnf
@@ -129,7 +134,7 @@ services:
 
   redis:
     image: redis:${REDIS_VERSION:-alpine}
-    container_name: redis
+    container_name: ${PROJECT:-wordpress}_redis
     restart: always
     volumes:
       - redis_data:/data
