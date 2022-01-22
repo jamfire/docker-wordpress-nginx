@@ -57,6 +57,8 @@ services:
       - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST}`)
       - traefik.http.routers.wordpress.tls=true
       - traefik.http.routers.wordpress.tls.certresolver=le
+    extra_hosts:
+      - ${NGINX_HOST}:127.0.0.1
     networks:
       - traefik
       - wordpress
