@@ -47,6 +47,8 @@ services:
       - NGINX_HOST=${NGINX_HOST:-wordpress.local}
     volumes:
       - wp_data:/var/www/html
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
       - ./templates:/etc/nginx/templates
     expose: 
       - 80
@@ -65,8 +67,8 @@ services:
   wordpress:
     depends_on:
       - db
-    build: ./wordpress
-    image: wordpress-fpm:production
+    # build: ./wordpress
+    image: wordpress:fpm-alpine
     container_name: ${PROJECT:-wordpress}_wordpress
     restart: always
     environment:
@@ -81,8 +83,12 @@ services:
         define( 'WP_REDIS_PORT', 6379 );
     volumes:
       - wp_data:/var/www/html
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
       - ./conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
       - ~/.ssh/id_rsa/:/root/.ssh/id_rsa
+    extra_hosts:
+      - ${NGINX_HOST}:127.0.0.1
     networks:
       - wordpress
 
@@ -108,6 +114,8 @@ services:
         define( 'WP_REDIS_PORT', 6379 );
     volumes:
       - wp_data:/var/www/html
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
     networks:
       - wordpress
 
@@ -128,6 +136,8 @@ services:
     networks:
       - wordpress
 
+  # Redis
+  # This stack uses Redis as a Database Object Cache for WordPress
   redis:
     image: redis:${REDIS_VERSION:-alpine}
     container_name: ${PROJECT:-wordpress}_redis
@@ -136,6 +146,18 @@ services:
       - redis_data:/data
     networks:
       - wordpress
+
+  # Watchtower
+  # Automatically pull new docker images as they're updated. This is useful for 
+  # private sites behind a VPN that don't have public access to tools like webhooks
+  # for deploying changes.
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: ${PROJECT:-wordpress}_watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
 
 volumes:
   db_data: 
