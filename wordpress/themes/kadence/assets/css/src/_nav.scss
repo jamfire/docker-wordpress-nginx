@@ -61,7 +61,7 @@
 /*--------------------------------------------------------------
 ## Submenu Toggles for Header Menus
 --------------------------------------------------------------*/
-.site .nav--toggle-sub .dropdown-nav-special-toggle {
+.wp-site-blocks .nav--toggle-sub .dropdown-nav-special-toggle {
     position: absolute !important;
     overflow: hidden;
     padding: 0 !important;
@@ -80,7 +80,7 @@
 	right:calc( 1.4em / 2 );
 	pointer-events: none;
 }
-.site .nav--toggle-sub .sub-menu .dropdown-nav-special-toggle {
+.wp-site-blocks .nav--toggle-sub .sub-menu .dropdown-nav-special-toggle {
 	width: 2.6em;
 	margin: 0 !important;
 	right:0;
@@ -147,14 +147,14 @@
 }
 // This makes the dropdowns work a little better on a touch device.
 @media ( hover: none ) {
-	.site .nav--toggle-sub .menu-item--has-toggle:not(.menu-item--toggled-on) .dropdown-nav-special-toggle {
+	.wp-site-blocks .nav--toggle-sub .menu-item--has-toggle:not(.menu-item--toggled-on) .dropdown-nav-special-toggle {
 		left: 0;
 		right:0 !important;
 		margin-right: 0 !important;
 		width: 100%;
 		pointer-events: all;
 	}
-	.site .nav--toggle-sub .menu-item--has-toggle:not(.menu-item--toggled-on) > a {
+	.wp-site-blocks .nav--toggle-sub .menu-item--has-toggle:not(.menu-item--toggled-on) > a {
 		pointer-events: none;
 	}
 }
@@ -166,7 +166,7 @@
     right: auto;
     left: calc(1.4em / 2);
 }
-.rtl .site .nav--toggle-sub .sub-menu .dropdown-nav-special-toggle {
+.rtl .wp-site-blocks .nav--toggle-sub .sub-menu .dropdown-nav-special-toggle {
     left: 0;
     right: auto;
 }
@@ -182,7 +182,7 @@
     padding-left: 1em;
     padding-right: 0;
 }
-.site .nav--toggle-sub .kadence-menu-mega-enabled .sub-menu .dropdown-nav-special-toggle {
+.wp-site-blocks .nav--toggle-sub .kadence-menu-mega-enabled .sub-menu .dropdown-nav-special-toggle {
     display: none;
 }
 /*--------------------------------------------------------------
@@ -274,6 +274,7 @@
 .header-navigation ul ul ul.sub-menu, .header-navigation ul ul ul.submenu {
 	top: 0;
 	left: 100%;
+	right:auto;
 	min-height: 100%;
 }
 .header-navigation .menu {
@@ -311,7 +312,7 @@
 		border:0;
 	}
 }
-.site .menu-toggle-open {
+.wp-site-blocks .menu-toggle-open {
 	box-shadow: none;
 }
 /*--------------------------------------------------------------
@@ -424,7 +425,7 @@ body[class*='amp-mode-'] .mobile-navigation ul ul {
 		box-shadow: 0 0 2rem 0 rgba(0, 0, 0, 0.1);
 		display: flex;
 		flex-direction: column;
-		transition: transform 0.3s cubic-bezier(0.77,0.2,0.05,1.0), opacity 0.4s cubic-bezier(0.77,0.2,0.05,1.0);
+		transition: transform 0.3s cubic-bezier(0.77,0.2,0.05,1.0), opacity 0.25s cubic-bezier(0.77,0.2,0.05,1.0);
 	}
 	.drawer-header {
 		padding: 0 1.5em;
@@ -473,7 +474,7 @@ body[class*='amp-mode-'] .mobile-navigation ul ul {
 .popup-drawer-animation-scale.popup-drawer-layout-fullwidth .drawer-inner {
 	transform: scale(0);
 	transform-origin: top right;
-    transition: transform 0.3s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.4s cubic-bezier(0.77,0.2,0.05,1.0);
+    transition: transform 0.3s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
 }
 .popup-drawer-animation-scale.popup-drawer-layout-fullwidth.popup-drawer-side-left .drawer-inner {
 	transform-origin: top left;

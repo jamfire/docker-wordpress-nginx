@@ -136,6 +136,15 @@ class ItemComponent extends Component {
 										this.props.onItemChange( { date: value }, this.props.index );
 									} }
 								/>
+								{ this.props.item.date && (
+									<ToggleControl
+										label={ __( 'Show Time?', 'kadence' ) }
+										checked={ this.props.item.dateTime ? this.props.item.dateTime : false }
+										onChange={ ( value ) => {
+											this.props.onItemChange( { dateTime: value }, this.props.index );
+										} }
+									/>
+								) }
 								{ undefined !== this.props.item.dateLabel && this.props.item.date && (
 									<div className="meta-label-control">
 										<span className="sorter-control-title">{ __( 'Date Label', 'kadence' ) }</span>

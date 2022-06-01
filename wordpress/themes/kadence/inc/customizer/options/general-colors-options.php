@@ -62,7 +62,7 @@ Theme_Customizer::add_settings(
 			'live_method'     => array(
 				array(
 					'type'     => 'css_background',
-					'selector' => '.site .entry-hero-container-inner',
+					'selector' => '.wp-site-blocks .entry-hero-container-inner',
 					'property' => 'background',
 					'pattern'  => '$',
 					'key'      => 'base',

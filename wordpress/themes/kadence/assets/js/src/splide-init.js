@@ -11,11 +11,10 @@
 		 * Initiate the script to process all
 		 */
 		start: function( element ) {
-			var slideRtl = 'ltr',
+			var sliderDirection = 'ltr',
 			nextLabel = element.getAttribute('data-slider-next-label'),
 			prevLabel = element.getAttribute('data-slider-prev-label'),
 			slideLabel = element.getAttribute('data-slider-slide-label'),
-			sliderType = element.getAttribute('data-slider-type'),
 			sliderSpeed = parseInt( element.getAttribute( 'data-slider-speed' ) ),
 			sliderAnimationSpeed = parseInt( element.getAttribute( 'data-slider-anim-speed' ) ),
 			sliderArrows = element.getAttribute( 'data-slider-arrows' ),
@@ -30,8 +29,8 @@
 			xs = parseInt( element.getAttribute( 'data-columns-xs' ) ),
 			ss = parseInt( element.getAttribute( 'data-columns-ss' ) ),
 			gutter = parseInt( element.getAttribute( 'data-slider-gutter' ) ),
-			scroll = parseInt( element.getAttribute( 'data-slider-scroll' ) ),
-			slidercenter = element.getAttribute( 'data-slider-center-mode' );
+			scroll = parseInt( element.getAttribute( 'data-slider-scroll' ) );
+			element.classList.add( 'splide-initial' );
 			if ( ! nextLabel ) {
 				nextLabel = kadenceSlideConfig.next;
 			}
@@ -41,52 +40,75 @@
 			if ( ! slideLabel ) {
 				slideLabel = kadenceSlideConfig.slide;
 			}
-			if ( document.body.classList.contains( 'rtl' ) ) {
-				slideRtl = 'rtl';
+			if ( document.querySelector( 'html[dir="rtl"]' ) ) {
+				sliderDirection = 'rtl';
 			}
 			if ( 1 !== scroll ) {
 				scroll = 'page'
 			}
-			var slider = tns( {
-				container: element,
-				items: ss,
-				slideBy: scroll,
-				preventScrollOnTouch: 'auto',
-				autoplay: ( 'true' === sliderAuto ? true : false ),
-				speed: sliderAnimationSpeed,
-				autoplayTimeout: sliderSpeed,
+			var scrollSxxl = xxl,
+				scrollSxl = xl,
+				scrollSmd = md,
+				scrollSsm = sm,
+				scrollSxs = xs,
+				scrollSss = ss;
+			if ( 1 === scroll ) {
+				scrollSxxl = 1;
+				scrollSxl = 1;
+				scrollSmd = 1;
+				scrollSsm = 1;
+				scrollSxs = 1;
+				scrollSss = 1;
+			}
+			var options = {
+				perPage: xxl,
+				type: 'loop',
+				slideFocus: false,
+				perMove: scrollSxxl,
+				autoplay: ( sliderAuto == 'false' ? false : true ),
+				easing: undefined !== sliderAnimationSpeed && sliderAnimationSpeed > 1000 ? 'linear' : 'cubic-bezier(0.25, 1, 0.5, 1)',
+				speed: ( undefined !== sliderAnimationSpeed ? sliderAnimationSpeed : 400 ),
+				interval: ( undefined !== sliderSpeed ? sliderSpeed : 7000 ),
 				autoplayHoverPause: ( 'true' === sliderPause ? true : false ),
-				controls: ( 'false' === sliderArrows ? false : true ),
-				nav: ( 'false' === sliderDots ? false : true ),
-				gutter: gutter,
-				slideLabel: slideLabel,
-				ofLabel: kadenceSlideConfig.of,
-				toLabel: kadenceSlideConfig.to,
-				controlsPosition: 'bottom',
-				navPosition: 'bottom',
-				useLocalStorage: false,
-				textDirection: slideRtl,
-				controlsText: [prevLabel, nextLabel],
+				arrows: ( sliderArrows == 'false' ? false : true ),
+				pagination: ( sliderDots == 'false' ? false : true ),
+				gap: gutter + 'px',
+				direction: sliderDirection,
 				loop:( 'false' === sliderLoop ? false : true ),
 				rewind:( 'false' === sliderLoop ? true : false ),
-				responsive: {
+				focus: 0,
+				perMove: scrollSxxl,
+				i18n: {
+					carousel: slideLabel,
+					prev: prevLabel,
+					next: nextLabel,
+					slideLabel: '%s ' + kadenceSlideConfig.of + ' %s',
+				},
+				breakpoints: {
 					543: {
-						items: xs
+						perPage: ss,
+						perMove: scrollSss,
 					},
 					767: {
-						items: sm
+						perPage: xs,
+						perMove: scrollSxs,
 					},
 					991: {
-						items: md
+						perPage: sm,
+						perMove: scrollSsm,
 					},
 					1199: {
-						items: xl
+						perPage: md,
+						perMove: scrollSmd,
 					},
 					1499: {
-						items: xxl
+						perPage: xl,
+						perMove: scrollSxl,
 					}
 				}
-			} );
+			};
+			var slider = new Splide( element, options );
+			slider.mount();
 		},
 		/**
 		 * Initiate the script to process all
@@ -98,10 +120,10 @@
 		},
 		// Initiate the menus when the DOM loads.
 		init: function() {
-			if ( typeof tns == 'function' ) {
+			if ( typeof Splide == 'function' ) {
 				window.kadenceSlide.initAll();
 			} else {
-				var initLoadDelay = setInterval( function(){ if ( typeof tns == 'function' ) { window.kadenceSlide.initAll(); clearInterval(initLoadDelay); } }, 200 );
+				var initLoadDelay = setInterval( function(){ if ( typeof Splide == 'function' ) { window.kadenceSlide.initAll(); clearInterval(initLoadDelay); } }, 200 );
 			}
 		}
 	}

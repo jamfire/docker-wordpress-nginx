@@ -37,7 +37,6 @@ class Component implements Component_Interface {
 	 */
 	public function initialize() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
-		add_action( 'wp_print_footer_scripts', array( $this, 'action_print_skip_link_focus_fix' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'ie_11_support_scripts' ), 60 );
 	}
 	/**
@@ -82,19 +81,19 @@ class Component implements Component_Interface {
 		}
 		// Enqueue the slide script.
 		wp_register_script(
-			'kadence-slide',
-			get_theme_file_uri( '/assets/js/tiny-slider.min.js' ),
+			'kadence-splide',
+			get_theme_file_uri( '/assets/js/splide.min.js' ),
 			array(),
 			KADENCE_VERSION,
 			true
 		);
-		wp_script_add_data( 'kadence-slide', 'async', true );
-		wp_script_add_data( 'kadence-slide', 'precache', true );
+		wp_script_add_data( 'kadence-splide', 'async', true );
+		wp_script_add_data( 'kadence-splide', 'precache', true );
 		// Enqueue the slide script.
 		wp_register_script(
 			'kadence-slide-init',
-			get_theme_file_uri( '/assets/js/slide-init.min.js' ),
-			array( 'kadence-slide', 'kadence-navigation' ),
+			get_theme_file_uri( '/assets/js/splide-init.min.js' ),
+			array( 'kadence-splide', 'kadence-navigation' ),
 			KADENCE_VERSION,
 			true
 		);
@@ -160,32 +159,8 @@ class Component implements Component_Interface {
 					'desktop' => esc_attr( $breakpoint ),
 					'tablet' => 768,
 				),
+				'scrollOffset' => apply_filters( 'kadence_scroll_to_id_additional_offset', 0 ),
 			)
 		);
-	}
-
-	/**
-	 * Prints an inline script to fix skip link focus in IE11.
-	 *
-	 * The script is not enqueued because it is tiny and because it is only for IE11,
-	 * thus it does not warrant having an entire dedicated blocking script being loaded.
-	 *
-	 * Since it will never need to be changed, it is simply printed in its minified version.
-	 *
-	 * @link https://git.io/vWdr2
-	 */
-	public function action_print_skip_link_focus_fix() {
-
-		// If the AMP plugin is active, return early.
-		if ( kadence()->is_amp() ) {
-			return;
-		}
-
-		// Print the minified script.
-		?>
-		<script>
-		/(trident|msie)/i.test(navigator.userAgent)&&document.getElementById&&window.addEventListener&&window.addEventListener("hashchange",function(){var t,e=location.hash.substring(1);/^[A-z0-9_-]+$/.test(e)&&(t=document.getElementById(e))&&(/^(?:a|select|input|button|textarea)$/i.test(t.tagName)||(t.tabIndex=-1),t.focus())},!1);
-		</script>
-		<?php
 	}
 }

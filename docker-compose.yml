@@ -19,6 +19,9 @@ services:
       - --providers.docker
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.le.acme.email=${LE_EMAIL:-email@example.com}
       - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
@@ -47,8 +50,8 @@ services:
       - NGINX_HOST=${NGINX_HOST:-wordpress.local}
     volumes:
       - wp_data:/var/www/html
-      # - ./wordpress/plugins:/var/www/html/wp-content/plugins
-      # - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/themes:/var/www/html/wp-content/themes
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d
     expose:
       - 80
@@ -57,8 +60,6 @@ services:
       - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST:-wordpress.local}`)
       - traefik.http.routers.wordpress.tls=true
       - traefik.http.routers.wordpress.tls.certresolver=le
-    # extra_hosts:
-    #   - ${NGINX_HOST:-wordpress.local}:traefik
     networks:
       - traefik
       - wordpress
@@ -89,8 +90,6 @@ services:
       - ./wordpress/themes:/var/www/html/wp-content/themes
       - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
       - ~/.ssh/id_rsa/:/root/.ssh/id_rsa
-    # extra_hosts:
-    #   - ${NGINX_HOST:-wordpress.local}:nginx
     networks:
       - wordpress
 

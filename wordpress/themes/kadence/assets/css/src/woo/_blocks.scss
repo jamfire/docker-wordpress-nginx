@@ -15,6 +15,9 @@
 	margin: 0 0 1em;
 	padding:0;
 }
+.wp-site-blocks .site-main .entry-content .wc-block-grid {
+	font-size: 1em;
+}
 .wc-block-grid .wc-block-grid__products {
     margin: 0 0 1em;
     padding: 0;
@@ -27,7 +30,7 @@
 		width: 100%;
 	}
 }
-.wc-block-grid .wc-block-grid__products:not(.thisisforspecificity) {
+.wc-block-grid .wc-block-grid__products:not(.thisisforspecificity), .wc-block-carousel {
 	.wc-block-grid__product {
 		border-left: 0;
 		border-right: 0;
@@ -37,6 +40,16 @@
 		flex: 1;
 		text-align: left;
 		overflow: hidden;
+	}
+}
+.wc-block-carousel .wc-block-grid__product .entry-content-wrap {
+	padding: 1.5rem;
+}
+.wc-block-carousel .wc-block-grid__product.product-loop-unboxed {
+	box-shadow: none;
+	.entry-content-wrap {
+		padding: 1rem 0 0;
+		background: transparent;
 	}
 }
 .wc-block-grid__product.entry.loop-entry.content-bg.woo-archive-action-on-hover .wc-block-grid__product-add-to-cart {
@@ -102,7 +115,7 @@
 	}
 }
 @media screen and (max-width: $phone-minus-query) {
-	.site .wc-block-grid .wc-block-grid__products {
+	.wp-site-blocks .wc-block-grid .wc-block-grid__products {
 		margin: 0 0 1em;
 		padding: 0;
 		display: grid;
@@ -140,8 +153,12 @@ body.content-style-unboxed .wc-block-grid .wc-block-grid__product .entry-content
 	padding: 1rem 0;
 	background: transparent;
 }
+body.content-style-unboxed .wc-block-grid .wc-block-grid__product.woo-archive-action-visible .entry-content-wrap, .wc-block-grid .wc-block-grid__product.product-loop-unboxed.woo-archive-action-visible .entry-content-wrap {
+	padding: 1rem 0 0;
+}
 .wc-block-grid .wc-block-grid__product.product-loop-unboxed {
 	background: transparent;
+	box-shadow: none;
 }
 .wc-block-grid__product a.wc-block-grid__product-link, .wc-block-grid__product a.wc-block-grid__product-title-link{
 	text-decoration: none;
@@ -284,6 +301,9 @@ body.content-style-unboxed .wc-block-grid .wc-block-grid__product .entry-content
 			box-shadow: none;
 			display: inline-block;
 			transition: color 0.2s ease;
+			.kadence-svg-iconset {
+				margin-left: 0.5em;
+			}
 		}
 	}
 }

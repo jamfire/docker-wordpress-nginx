@@ -7,6 +7,85 @@
 
 namespace Kadence;
 
+if ( ! is_singular( 'attachment' ) ) {
+?>
+
+<article <?php post_class( 'entry content-bg loop-entry' ); ?>>
+	<?php
+		$defaults = array(
+			'enabled'   => true,
+			'ratio'     => '2-3',
+			'size'      => 'medium_large',
+			'imageLink' => true,
+		);
+		$slug            = ( is_search() ? 'search' : get_post_type() );
+		$feature_element = kadence()->option( $slug . '_archive_element_feature', $defaults );
+		if ( isset( $feature_element ) && is_array( $feature_element ) && true === $feature_element['enabled'] ) {
+			$feature_element = wp_parse_args( $feature_element, $defaults );
+			$ratio = ( isset( $feature_element['ratio'] ) && ! empty( $feature_element['ratio'] ) ? $feature_element['ratio'] : '2-3' );
+			$size  = ( isset( $feature_element['size'] ) && ! empty( $feature_element['size'] ) ? $feature_element['size'] : 'medium_large' );
+			if ( isset( $feature_element['imageLink'] ) && ! $feature_element['imageLink'] ) {
+				?>
+				<div class="post-thumbnail kadence-thumbnail-ratio-<?php echo esc_attr( $ratio ); ?>">
+					<div class="post-thumbnail-inner">
+						<?php
+						echo wp_get_attachment_image(
+							get_the_ID(),
+							$size,
+							false,
+							array(
+								'alt' => the_title_attribute(
+									array(
+										'echo' => false,
+									)
+								),
+							)
+						);
+						?>
+					</div>
+				</div><!-- .post-thumbnail -->
+				<?php
+			} else {
+				?>
+				<a class="post-thumbnail kadence-thumbnail-ratio-<?php echo esc_attr( $ratio ); ?>" href="<?php the_permalink(); ?>">
+					<div class="post-thumbnail-inner">
+						<?php
+						echo wp_get_attachment_image(
+							get_the_ID(),
+							$size,
+							false,
+							array(
+								'alt' => the_title_attribute(
+									array(
+										'echo' => false,
+									)
+								),
+							)
+						);
+						?>
+					</div>
+				</a><!-- .post-thumbnail -->
+				<?php
+			}
+		}		
+	?>
+	<div class="entry-content-wrap">
+		<?php
+		/**
+		 * Hook for entry content.
+		 *
+		 * @hooked Kadence\loop_entry_header - 10
+		 * @hooked Kadence\loop_entry_summary - 20
+		 * @hooked Kadence\loop_entry_footer - 30
+		 */
+		do_action( 'kadence_loop_entry_content' );
+		?>
+	</div>
+</article>
+
+<?php
+}
+if ( is_singular( 'attachment' ) ) {
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class( 'entry' ); ?>>
@@ -18,6 +97,7 @@ namespace Kadence;
 </article><!-- #post-<?php the_ID(); ?> -->
 
 <?php
+}
 if ( is_singular( get_post_type() ) ) {
 	// Show attachment navigation only when the attachment has a parent.
 	if ( ! empty( $post->post_parent ) ) {

@@ -281,7 +281,7 @@ $settings = array(
 		'live_method'     => array(
 			array(
 				'type'     => 'css_typography',
-				'selector' => '.site .page-title h1',
+				'selector' => '.wp-site-blocks .page-title h1',
 				'property' => 'font',
 				'key'      => 'typography',
 			),

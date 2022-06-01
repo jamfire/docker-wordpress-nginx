@@ -286,6 +286,8 @@ class Component implements Component_Interface, Templating_Component_Interface {
 				$html .= $this->get_crumbs_product_category();
 			} elseif ( function_exists( 'is_product_tag' ) && is_product_tag() ) {
 				$html .= $this->get_crumbs_product_tag();
+			} elseif ( $this->is_wc_attribute() ) {
+				$html .= $this->get_crumbs_product_attribute();
 			}  elseif ( function_exists( 'dokan_is_store_page' ) && dokan_is_store_page() ) {
 				$html .= $this->get_crumbs_dokan_store();
 			} elseif ( is_category() ) {
@@ -316,6 +318,26 @@ class Component implements Component_Interface, Templating_Component_Interface {
 		 * @param string      $html   HTML output.
 		 */
 		return apply_filters( 'kadence_breadcrumb_html', $html );
+	}
+	/**
+	 * Check for wc_attribute_archive.
+	 */
+	public function is_wc_attribute() {
+
+		/** 
+		 * Attributes are proper taxonomies, therefore first thing is 
+		 * to check if we are on a taxonomy page using the is_tax(). 
+		 * Also, a further check if the taxonomy_is_product_attribute 
+		 * function exists is necessary, in order to ensure that this 
+		 * function does not produce fatal errors when the WooCommerce 
+		 * is not  activated
+		 */
+		if ( is_tax() && function_exists( 'taxonomy_is_product_attribute') ) { 
+			// now we know for sure that the queried object is a taxonomy
+			$tax_obj = get_queried_object();
+			return taxonomy_is_product_attribute( $tax_obj->taxonomy );
+		}
+		return false;
 	}
 	/**
 	 * Get Separator
@@ -461,6 +483,16 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	 * Get product tag
 	 */
 	private function get_crumbs_product_tag() {
+		$html = '';
+		if ( $this->args['show_shop'] ) {
+			$html .= $this->get_shop_crumb();
+		}
+		return $html . $this->settings['before'] . $this->get_breadcrumb_term_title( get_queried_object() ) . $this->settings['after'];
+	}
+	/**
+	 * Get product attributes.
+	 */
+	private function get_crumbs_product_attribute() {
 		$html = '';
 		if ( $this->args['show_shop'] ) {
 			$html .= $this->get_shop_crumb();

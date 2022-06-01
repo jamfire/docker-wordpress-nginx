@@ -35,7 +35,23 @@
 	font-style: normal;
 }
 @import "../woo/_blocks.scss";
-
+.wp-block, .wp-block.block-list-appender:only-child, .block-editor-block-list__layout.is-root-container > * {
+    margin-left: auto;
+    margin-right: auto;
+}
+html :where(.wp-block) {
+	max-width: none;
+}
+.block-editor-block-list__layout.is-root-container > [data-align="full"] {
+	max-width: none;
+}
+.block-editor-block-list__layout.is-root-container > * > .wp-block[data-align=wide] {
+    max-width: none;
+}
+.edit-post-visual-editor__post-title-wrapper {
+    margin-top: var(--global-md-spacing);
+    margin-bottom: var(--global-md-spacing);
+}
 /*--------------------------------------------------------------
 # Adjustments for the editor
 --------------------------------------------------------------*/
@@ -200,7 +216,9 @@ p, .wp-block[data-type="kadence/advancedheading"]:not(:last-child) p {
 p:last-child {
 	margin-bottom: 0;
 }
-
+p > img {
+    display: inline-block;
+}
 pre {
 	margin-bottom: var(--global-md-spacing);
 }
@@ -237,6 +255,8 @@ li>ol, li>ul {
 .editor-post-title__input {
 	margin-top: 0;
 	margin-bottom: 0;
+	padding-top: 0;
+	padding-bottom: 0;
 }
 
 .gallery .gallery-item,

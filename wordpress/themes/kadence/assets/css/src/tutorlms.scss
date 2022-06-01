@@ -11,12 +11,24 @@
 .tutor-single-course-avatar a, .tutor-course-enrolled-review-wrap .write-course-review-link-btn, .tutor-wrap nav.course-enrolled-nav ul li a, .tutor-single-course-meta.tutor-lead-meta ul li a, .tutor-single-lesson-button-group .tutor-single-lesson-button a, .tutor-topics-in-single-lesson .tutor-single-lesson-items a, .tutor-tabs-btn-group a, .tutor-single-page-top-bar a {
     text-decoration: none;
 }
+.entry-hero .tutor-course-details-header {
+    width: 100%;
+}
+.content-style-boxed .tutor-course-details-tab {
+    margin-top: 0 !important;
+}
+.single-courses:not(.content-style-unboxed) .tutor-course-sidebar-card, .courses-sidebar-overlay-true .tutor-course-sidebar-card {
+    background: var(--global-palette9);
+    box-shadow: 0px 15px 25px -10px rgba(0,0,0,0.05);
+    border-radius: 0.25rem;
+    border: 0;
+}
 .entry-hero.courses-hero-section .entry-header {
 	text-align: left;
 	align-items: flex-start;
 }
 .entry-hero.courses-hero-section {
-	.tutor-single-course-meta ul li, .tutor-single-course-meta ul li a, .tutor-single-course-meta ul li span, .tutor-single-course-meta ul li.tutor-social-share button, .tutor-single-course-rating .tutor-single-rating-count, .tutor-single-course-rating .tutor-single-rating-count i {
+	.tutor-single-course-meta ul li, .tutor-single-course-meta ul li a, .tutor-single-course-meta ul li span, .tutor-single-course-meta ul li.tutor-social-share button, .tutor-single-course-rating .tutor-single-rating-count, .tutor-single-course-rating .tutor-single-rating-count i, .tutor-rating-text, .tutor-course-details-category, .tutor-color-muted, .tutor-course-details-category a, .tutor-course-details-action-btns>a  {
 		color: var(--global-palette9);
 	}
 }
@@ -38,6 +50,9 @@ body.single-courses:not(.content-style-unboxed) .tutor-price-preview-box {
 	}
 }
 @media (min-width: 992px) {
+	.courses-sidebar-overlay-true .entry-hero .tutor-course-details-header {
+		max-width: calc( 66.67% - 55px );
+	}
 	.tutor-container > .tutor-row >.tutor-col-8.tutor-col-md-100 {
 		padding-right: var(--global-xl-spacing);
 	}
@@ -64,6 +79,16 @@ body.single-courses:not(.content-style-unboxed) .tutor-price-preview-box {
 		.tutor-container > .tutor-row >.tutor-col-4 {
 			padding-left: 15px;
 			padding-right: 0;
+		}
+		.tutor-course-details-page-main {
+			grid-template-columns: 4fr 8fr;
+			grid-template-areas: "column-left column-right";
+			.tutor-course-details-page-main-left {
+				grid-area: column-right;
+			}
+			.tutor-course-details-page-main-right {
+				grid-area: column-left;
+			}
 		}
 	}
 }

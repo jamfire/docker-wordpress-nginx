@@ -7,11 +7,11 @@
 
 namespace Kadence;
 
-get_header();
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+get_header();
 
 kadence()->print_styles( 'kadence-content' );
 /**

@@ -173,7 +173,7 @@
     column-gap: 2.5rem;
     row-gap: 2.5rem;
 }
-.site .grid-cols:before {
+.wp-site-blocks .grid-cols:before {
     display: none;
 }
 .grid-xs-col-1 {
@@ -186,7 +186,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr) );
 }
 .grid-xs-col-4 {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(4, minmax(0, 1fr) );
 }
 @media screen and (min-width: $landscape-phone-plus-query) {
 	.grid-sm-col-1 {
@@ -199,7 +199,7 @@
 	    grid-template-columns: repeat(3, minmax(0, 1fr) );
 	}
 	.grid-sm-col-4 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(4, minmax(0, 1fr) );
 	}
 }
 @media screen and (min-width: $tablet-plus-query) {
@@ -213,7 +213,7 @@
 	    grid-template-columns: repeat(3, minmax(0, 1fr) );
 	}
 	.grid-md-col-4 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(4, minmax(0, 1fr) );
 	}
 }
 @media screen and (min-width: $laptop-plus-query) {
@@ -227,13 +227,13 @@
 	    grid-template-columns: repeat(3, minmax(0, 1fr) );
 	}
 	.grid-lg-col-4 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(4, minmax(0, 1fr) );
 	}
 	.grid-lg-col-5 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(5, minmax(0, 1fr) );
 	}
 	.grid-lg-col-6 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(6, minmax(0, 1fr) );
 	}
 }
 @media screen and (min-width: $desktop-plus-query) {
@@ -247,12 +247,12 @@
 	    grid-template-columns: repeat(3, minmax(0, 1fr) );
 	}
 	.grid-xl-col-4 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(4, minmax(0, 1fr) );
 	}
 	.grid-xl-col-5 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(5, minmax(0, 1fr) );
 	}
 	.grid-xl-col-6 {
-	    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+	    grid-template-columns: repeat(6, minmax(0, 1fr) );
 	}
 }

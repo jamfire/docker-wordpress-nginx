@@ -49,16 +49,11 @@
 .site-header-row-tablet-layout-contained {
 	padding: 0 1.5rem;
 }
-@media screen and (max-width: $tablet-minus-query) {
-	.site-header-row-tablet-layout-fullwidth, .site-header-row-tablet-layout-standard {
-		padding: 0;
-	}
-}
 @media screen and (max-width: $phone-minus-query) {
-	.site-header-row-mobile-layout-contained {
+	.site-header-focus-item.site-header-row-mobile-layout-contained {
 		padding: 0 1.5rem;
 	}
-	.site-header-row-mobile-layout-fullwidth, .site-header-row-mobile-layout-standard {
+	.site-header-focus-item.site-header-row-mobile-layout-fullwidth, .site-header-focus-item.site-header-row-mobile-layout-standard {
 		padding: 0;
 	}
 }
@@ -299,38 +294,6 @@ a.social-button.has-custom-image {
 	}
 	button[type="submit"]:hover ~ .kadence-search-icon-wrap {
 		color: #ffffff;
-	}
-}
-//Transparent Header
-@media screen and (max-width: $tablet-minus-query) {
-	.mobile-transparent-header #masthead {
-		position: absolute;
-		left: 0;
-		right: 0;
-		z-index: 100;
-	}
-	.mobile-transparent-header {
-		#masthead, .site-top-header-wrap .site-header-row-container-inner, .site-main-header-wrap .site-header-row-container-inner, .site-bottom-header-wrap .site-header-row-container-inner {
-			background:transparent;
-		}
-	}
-}
-@media screen and (min-width: $laptop-plus-query) {
-	body.elementor-editor-active, body.fl-builder-edit, body.vc_editor, body.brz-ed {
-		&.transparent-header #masthead {
-			z-index: 0;
-		}
-	}
-	.transparent-header #masthead {
-		position: absolute;
-		left: 0;
-		right: 0;
-		z-index: 100;
-	}
-	.transparent-header {
-		#masthead, .site-top-header-wrap .site-header-row-container-inner, .site-main-header-wrap .site-header-row-container-inner, .site-bottom-header-wrap .site-header-row-container-inner {
-			background:transparent;
-		}
 	}
 }
 // sticky Header

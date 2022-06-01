@@ -56,6 +56,18 @@ class Component implements Component_Interface {
 		add_action( 'wp_head', array( $this, 'frontend_gfonts' ), 80 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'tribe_styles' ), 60 );
 		add_filter( 'kadence_theme_options_defaults', array( $this, 'add_option_defaults' ) );
+		add_filter( 'tribe_default_events_block_single_classes', array( $this, 'events_template_classes' ) );
+	}
+	/**
+	 * Add event template classes.
+	 *
+	 * @param array $classes template classes.
+	 * @return array
+	 */
+	public function events_template_classes( $classes ) {
+		$classes[] = 'entry';
+		$classes[] = 'content-bg';
+		return $classes;
 	}
 	/**
 	 * Generates the dynamic css based on customizer options.
@@ -80,7 +92,7 @@ class Component implements Component_Interface {
 		$media_query            = array();
 		$media_query['mobile']  = apply_filters( 'kadence_mobile_media_query', '(max-width: 767px)' );
 		$media_query['tablet']  = apply_filters( 'kadence_tablet_media_query', '(max-width: 1024px)' );
-		$media_query['desktop'] = apply_filters( 'kadence_tablet_media_query', '(min-width: 1025px)' );
+		$media_query['desktop'] = apply_filters( 'kadence_desktop_media_query', '(min-width: 1025px)' );
 		$css->set_selector( ':root' );
 		$css->add_property( '--tec-color-background-events', 'var(--global-palette9)' );
 		$css->add_property( '--tec-color-text-event-date', 'var(--global-palette3)' );
@@ -120,7 +132,7 @@ class Component implements Component_Interface {
 		$css->stop_media_query();
 		// Events Title Font.
 		$css->set_selector( '.tribe_events-title h1' );
-		$css->render_font( kadence()->option( 'tribe_events_title_font' ), $css );
+		$css->render_font( kadence()->option( 'tribe_events_title_font' ), $css, 'heading' );
 		$css->start_media_query( $media_query['tablet'] );
 		$css->set_selector( '.tribe_events-title h1' );
 		$css->add_property( 'font-size', $css->render_font_size( kadence()->option( 'tribe_events_title_font' ), 'tablet' ) );

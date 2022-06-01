@@ -742,7 +742,7 @@ $settings = array(
 		'live_method'     => array(
 			array(
 				'type'     => 'css_background',
-				'selector' => '.site #masthead .kadence-sticky-header.item-is-fixed:not(.item-at-start):not(.site-header-row-container), .site #masthead .kadence-sticky-header.item-is-fixed:not(.item-at-start) > .site-header-row-container-inner',
+				'selector' => '.wp-site-blocks #masthead .kadence-sticky-header.item-is-fixed:not(.item-at-start):not(.site-header-row-container), .wp-site-blocks #masthead .kadence-sticky-header.item-is-fixed:not(.item-at-start) > .site-header-row-container-inner',
 				'property' => 'background',
 				'pattern'  => '$',
 				'key'      => 'base',

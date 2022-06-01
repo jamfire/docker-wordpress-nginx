@@ -78,7 +78,14 @@ class Component implements Component_Interface {
 	 * Outputs the tutor lead.
 	 */
 	public function header_lead() {
-		get_template_part( 'tutor/single/course/above-lead-info' );
+		if ( defined( 'TUTOR_VERSION' ) && version_compare( TUTOR_VERSION, '2.0.0' ) >= 0 ) {
+			$is_enrolled = tutor_utils()->is_enrolled();
+			( isset( $is_enrolled ) && $is_enrolled ) ? tutor_course_enrolled_lead_info() : tutor_course_lead_info();
+			// remove normal Lead template.
+			add_filter( 'should_tutor_load_template', array( $this, 'remove_lead_template' ), 10, 3 );
+		} else {
+			get_template_part( 'tutor/single/course/lead-info' );
+		}
 	}
 
 	/**
@@ -103,7 +110,9 @@ class Component implements Component_Interface {
 			// remove normal Lead template.
 			add_filter( 'should_tutor_load_template', array( $this, 'remove_lead_template' ), 10, 3 );
 			// Add content lead template.
-			get_template_part( 'tutor/single/course/enrolled/content-lead-info' );
+			if ( defined( 'TUTOR_VERSION' ) && ! ( version_compare( TUTOR_VERSION, '2.0.0' ) >= 0 ) ) {
+				get_template_part( 'tutor/single/course/enrolled/content-lead-info' );
+			}
 		}
 	}
 	/**
@@ -115,7 +124,9 @@ class Component implements Component_Interface {
 			// remove normal Lead template.
 			add_filter( 'should_tutor_load_template', array( $this, 'remove_lead_template' ), 10, 3 );
 			// Add content lead template.
-			get_template_part( 'tutor/single/course/content-lead-info' );
+			if ( defined( 'TUTOR_VERSION' ) && ! ( version_compare( TUTOR_VERSION, '2.0.0' ) >= 0 ) ) {
+				get_template_part( 'tutor/single/course/content-lead-info' );
+			}
 		}
 	}
 	/**
@@ -363,7 +374,7 @@ class Component implements Component_Interface {
 		$media_query            = array();
 		$media_query['mobile']  = apply_filters( 'kadence_mobile_media_query', '(max-width: 767px)' );
 		$media_query['tablet']  = apply_filters( 'kadence_tablet_media_query', '(max-width: 1024px)' );
-		$media_query['desktop'] = apply_filters( 'kadence_tablet_media_query', '(min-width: 1025px)' );
+		$media_query['desktop'] = apply_filters( 'kadence_desktop_media_query', '(min-width: 1025px)' );
 		// Above Course Title.
 		$css->set_selector( '.courses-hero-section .entry-hero-container-inner' );
 		$css->render_background( kadence()->sub_option( 'courses_title_background', 'desktop' ), $css );
@@ -390,16 +401,16 @@ class Component implements Component_Interface {
 		$css->add_property( 'min-height', $css->render_range( kadence()->option( 'courses_title_height' ), 'mobile' ) );
 		$css->stop_media_query();
 		// Course Title.
-		$css->set_selector( '.tutor-single-course-lead-info h1.tutor-course-header-h1' );
-		$css->render_font( kadence()->option( 'courses_title_font' ), $css );
+		$css->set_selector( '.tutor-single-course-lead-info h1.tutor-course-header-h1, .tutor-course-details-title .tutor-fs-4' );
+		$css->render_font( kadence()->option( 'courses_title_font' ), $css, 'heading' );
 		$css->start_media_query( $media_query['tablet'] );
-		$css->set_selector( '.tutor-single-course-lead-info h1.tutor-course-header-h1' );
+		$css->set_selector( '.tutor-single-course-lead-info h1.tutor-course-header-h1, .tutor-course-details-title .tutor-fs-4' );
 		$css->add_property( 'font-size', $css->render_font_size( kadence()->option( 'courses_title_font' ), 'tablet' ) );
 		$css->add_property( 'line-height', $css->render_font_height( kadence()->option( 'courses_title_font' ), 'tablet' ) );
 		$css->add_property( 'letter-spacing', $css->render_font_spacing( kadence()->option( 'courses_title_font' ), 'tablet' ) );
 		$css->stop_media_query();
 		$css->start_media_query( $media_query['mobile'] );
-		$css->set_selector( '.tutor-single-course-lead-info h1.tutor-course-header-h1' );
+		$css->set_selector( '.tutor-single-course-lead-info h1.tutor-course-header-h1, .tutor-course-details-title .tutor-fs-4' );
 		$css->add_property( 'font-size', $css->render_font_size( kadence()->option( 'courses_title_font' ), 'mobile' ) );
 		$css->add_property( 'line-height', $css->render_font_height( kadence()->option( 'courses_title_font' ), 'mobile' ) );
 		$css->add_property( 'letter-spacing', $css->render_font_spacing( kadence()->option( 'courses_title_font' ), 'mobile' ) );
@@ -440,7 +451,7 @@ class Component implements Component_Interface {
 		$css->set_selector( '.entry-hero.courses-hero-section .entry-header' );
 		$css->add_property( 'min-height', $css->render_range( kadence()->option( 'courses_title_height' ), 'mobile' ) );
 		$css->stop_media_query();
-		$css->set_selector( '.site .courses-archive-title h1' );
+		$css->set_selector( '.wp-site-blocks .courses-archive-title h1' );
 		$css->add_property( 'color', $css->render_color( kadence()->sub_option( 'courses_archive_title_color', 'color' ) ) );
 		$css->set_selector( '.courses-archive-title .kadence-breadcrumbs' );
 		$css->add_property( 'color', $css->render_color( kadence()->sub_option( 'courses_archive_title_breadcrumb_color', 'color' ) ) );

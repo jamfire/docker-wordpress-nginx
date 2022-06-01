@@ -199,6 +199,7 @@
 .single-tribe_events #primary .tribe-blocks-editor .tribe-events-event-meta {
 	background: var( --global-palette8 );
 	border-color: var(--global-palette7);
+    padding: 0 1em;
 }
 #primary {
 	.tribe-block__events-link .tribe-block__btn--link a {
@@ -208,4 +209,7 @@
 	.tribe-block__venue .tribe-block__venue__meta .tribe-block__venue__address a {
 		color: var(--global-palette-highlight);
 	}
+}
+.content-style-boxed #tribe-events-content .entry-content-wrap {
+	position: relative;
 }

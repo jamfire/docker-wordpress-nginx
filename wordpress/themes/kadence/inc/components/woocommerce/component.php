@@ -336,14 +336,14 @@ class Component implements Component_Interface {
 				'<a href="%s" %s>%s</a>',
 				esc_url( $product->add_to_cart_url() ),
 				wc_implode_html_attributes( $attributes ),
-				esc_html( $product->add_to_cart_text() ) . ' ' . kadence()->get_icon( 'spinner' ) . ' ' . kadence()->get_icon( 'check' )
+				esc_html( $product->add_to_cart_text() ) . '' . kadence()->get_icon( 'spinner' ) . '' . kadence()->get_icon( 'check' )
 			);
 		} else {
 			$cart_text = sprintf(
 				'<a href="%s" %s>%s</a>',
 				esc_url( $product->add_to_cart_url() ),
 				wc_implode_html_attributes( $attributes ),
-				esc_html( $product->add_to_cart_text() ) . ' ' . kadence()->get_icon( 'arrow-right-alt' ) . ' ' . kadence()->get_icon( 'spinner' ) . ' ' . kadence()->get_icon( 'check' )
+				esc_html( $product->add_to_cart_text() ) . '' . kadence()->get_icon( 'arrow-right-alt' ) . '' . kadence()->get_icon( 'spinner' ) . '' . kadence()->get_icon( 'check' )
 			);
 		}
 		$action_button = '<div class="wp-block-button wc-block-grid__product-add-to-cart">' . $cart_text . '</div>';
@@ -1146,7 +1146,7 @@ class Component implements Component_Interface {
 				esc_attr( isset( $args['quantity'] ) ? $args['quantity'] : 1 ),
 				esc_attr( isset( $args['class'] ) ? $args['class'] : 'button' ),
 				isset( $args['attributes'] ) ? wc_implode_html_attributes( $args['attributes'] ) : '',
-				esc_html( $product->add_to_cart_text() ) . ' ' . kadence()->get_icon( 'spinner' ) . ' ' . kadence()->get_icon( 'check' )
+				esc_html( $product->add_to_cart_text() ) . '' . kadence()->get_icon( 'spinner' ) . '' . kadence()->get_icon( 'check' )
 			);
 		} else {
 			$button = sprintf(
@@ -1155,7 +1155,7 @@ class Component implements Component_Interface {
 				esc_attr( isset( $args['quantity'] ) ? $args['quantity'] : 1 ),
 				esc_attr( isset( $args['class'] ) ? $args['class'] : 'button' ),
 				isset( $args['attributes'] ) ? wc_implode_html_attributes( $args['attributes'] ) : '',
-				esc_html( $product->add_to_cart_text() ) . ' ' . kadence()->get_icon( 'arrow-right-alt' ) . ' ' . kadence()->get_icon( 'spinner' ) . ' ' . kadence()->get_icon( 'check' )
+				esc_html( $product->add_to_cart_text() ) . '' . kadence()->get_icon( 'arrow-right-alt' ) . '' . kadence()->get_icon( 'spinner' ) . '' . kadence()->get_icon( 'check' )
 			);
 		}
 		return $button;

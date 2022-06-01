@@ -449,7 +449,7 @@ class Component implements Component_Interface {
 						$custom_colors = array_merge( $new_add, $custom_colors );
 					}
 				}
-				error_log( 'Here is the error?' );
+				// error_log( 'Here is the error?' );
 				\Elementor\Plugin::$instance->kits_manager->update_kit_settings_based_on_option( 'custom_colors', $custom_colors );
 				\Elementor\Plugin::$instance->kits_manager->update_kit_settings_based_on_option( 'kadence_colors', $theme_placeholder_colors );
 				// Refresh cache.

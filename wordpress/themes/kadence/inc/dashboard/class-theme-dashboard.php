@@ -134,6 +134,9 @@ class Kadence_Dashboard_Settings {
 				'videoImage' => esc_attr( get_template_directory_uri() . '/assets/images/getting-started-video.jpg' ),
 			)
 		);
+		if ( function_exists( 'wp_set_script_translations' ) ) {
+			wp_set_script_translations( 'kadence-dashboard', 'kadence' );
+		}
 	}
 	/**
 	 * Get Changelog ( Largely Borrowed From Neve Theme )

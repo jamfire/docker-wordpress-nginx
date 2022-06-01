@@ -549,7 +549,7 @@ class Component implements Component_Interface {
 		$media_query            = array();
 		$media_query['mobile']  = apply_filters( 'kadence_mobile_media_query', '(max-width: 767px)' );
 		$media_query['tablet']  = apply_filters( 'kadence_tablet_media_query', '(max-width: 1024px)' );
-		$media_query['desktop'] = apply_filters( 'kadence_tablet_media_query', '(min-width: 1025px)' );
+		$media_query['desktop'] = apply_filters( 'kadence_desktop_media_query', '(min-width: 1025px)' );
 		// Forum CSS.
 		if ( is_bbpress() && is_singular( 'forum' ) ) {
 			// Forum Backgrounds.
@@ -571,7 +571,7 @@ class Component implements Component_Interface {
 			$css->stop_media_query();
 			// Forum Title.
 			$css->set_selector( '.forum-title h1' );
-			$css->render_font( kadence()->option( 'forum_title_font' ), $css );
+			$css->render_font( kadence()->option( 'forum_title_font' ), $css, 'heading' );
 			$css->start_media_query( $media_query['tablet'] );
 			$css->set_selector( '.forum-title h1' );
 			$css->add_property( 'font-size', $css->render_font_size( kadence()->option( 'forum_title_font' ), 'tablet' ) );
@@ -702,7 +702,7 @@ class Component implements Component_Interface {
 			$css->stop_media_query();
 			// Forum Title.
 			$css->set_selector( '.forum-archive-title h1' );
-			$css->render_font( kadence()->option( 'forum_archive_title_font' ), $css );
+			$css->render_font( kadence()->option( 'forum_archive_title_font' ), $css, 'heading' );
 			$css->start_media_query( $media_query['tablet'] );
 			$css->set_selector( '.forum-archive-title h1' );
 			$css->add_property( 'font-size', $css->render_font_size( kadence()->option( 'forum_archive_title_font' ), 'tablet' ) );
@@ -834,7 +834,7 @@ class Component implements Component_Interface {
 			$css->stop_media_query();
 			// Topic Title.
 			$css->set_selector( '.topic-title h1' );
-			$css->render_font( kadence()->option( 'topic_title_font' ), $css );
+			$css->render_font( kadence()->option( 'topic_title_font' ), $css, 'heading' );
 			$css->start_media_query( $media_query['tablet'] );
 			$css->set_selector( '.topic-title h1' );
 			$css->add_property( 'font-size', $css->render_font_size( kadence()->option( 'topic_title_font' ), 'tablet' ) );

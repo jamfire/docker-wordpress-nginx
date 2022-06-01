@@ -327,7 +327,7 @@ class Theme_Customizer {
 					require_once get_template_directory() . '/inc/customizer/options/learndash-quiz-layout-options.php'; // phpcs:ignore WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 				}
 			}
-			if ( defined( 'LEARNDASH_COURSE_GRID_VERSION' ) ) {
+			if ( defined( 'LEARNDASH_COURSE_GRID_VERSION' ) && version_compare( LEARNDASH_COURSE_GRID_VERSION, '2.0.0', '<' ) ) {
 				require_once get_template_directory() . '/inc/customizer/options/learndash-grid-options.php'; // phpcs:ignore WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 			}
 		}
@@ -541,8 +541,8 @@ class Theme_Customizer {
 		// Define panels.
 		if ( is_null( self::$panels ) ) {
 			$panels = array(
-				'general' => array(
-					'title'    => __( 'General', 'kadence' ),
+				'design' => array(
+					'title'    => __( 'Colors & Fonts', 'kadence' ),
 					'priority' => 18,
 				),
 				'header' => array(
@@ -553,12 +553,12 @@ class Theme_Customizer {
 					'title'    => __( 'Footer', 'kadence' ),
 					'priority' => 22,
 				),
-				'blog_posts' => array(
-					'title'    => __( 'Blog Posts', 'kadence' ),
+				'general' => array(
+					'title'    => __( 'General', 'kadence' ),
 					'priority' => 23,
 				),
-				'custom_post' => array(
-					'title'    => __( 'Custom Post Types', 'kadence' ),
+				'all_posts' => array(
+					'title'    => __( 'Posts/Pages Layout', 'kadence' ),
 					'priority' => 24,
 				),
 			);
@@ -640,17 +640,17 @@ class Theme_Customizer {
 				),
 				'general_colors' => array(
 					'title'    => __( 'Colors', 'kadence' ),
-					'panel'    => 'general',
+					'panel'    => 'design',
 					'priority' => 9,
 				),
 				'general_buttons' => array(
 					'title'    => __( 'Buttons', 'kadence' ),
-					'panel'    => 'general',
+					'panel'    => 'design',
 					'priority' => 10,
 				),
 				'general_typography' => array(
 					'title'    => __( 'Typography', 'kadence' ),
-					'panel'    => 'general',
+					'panel'    => 'design',
 					'priority' => 11,
 				),
 				'scroll_up' => array(
@@ -930,8 +930,8 @@ class Theme_Customizer {
 				),
 				'page_layout' => array(
 					'title'    => __( 'Page Layout', 'kadence' ),
-					//'panel'    => 'pages',
-					'priority' => 22,
+					'panel'    => 'all_posts',
+					'priority' => 3,
 				),
 				'search' => array(
 					'title'    => __( 'Search Results', 'kadence' ),
@@ -943,24 +943,29 @@ class Theme_Customizer {
 				),
 				'post_layout' => array(
 					'title'    => __( 'Single Post Layout', 'kadence' ),
-					'panel'    => 'blog_posts',
-					'priority' => 24,
+					'panel'    => 'all_posts',
+					'priority' => 7,
 				),
 				'post_layout_design' => array(
 					'title'    => __( 'Single Post Layout', 'kadence' ),
-					'panel'    => 'blog_posts',
-					'priority' => 24,
+					'panel'    => 'all_posts',
+					'priority' => 7,
 				),
 				'post_archive' => array(
 					'title'    => __( 'Archive Layout', 'kadence' ),
-					'panel'    => 'blog_posts',
-					'priority' => 25,
+					'panel'    => 'all_posts',
+					'priority' => 8,
 				),
 				'post_archive_design' => array(
 					'title'    => __( 'Archive Layout', 'kadence' ),
-					'panel'    => 'blog_posts',
-					'priority' => 25,
+					'panel'    => 'all_posts',
+					'priority' => 8,
 				),
+				// 'custom_post' => array(
+				// 	'title'    => __( 'Custom Post Types', 'kadence' ),
+				// 	'panel'    => 'all_posts',
+				// 	'priority' => 24,
+				// ),
 			);
 			if ( ( defined( 'GUTENBERG_VERSION' ) && version_compare( GUTENBERG_VERSION, '10.6.2', '>' ) ) || version_compare( substr( get_bloginfo( 'version' ), 0, 3 ), '5.8', '>=' ) ) {
 				$blocks_extra['sidebar-widgets-footer1'] = array(
@@ -1296,37 +1301,51 @@ class Theme_Customizer {
 				$post_type_name  = $post_type_item->name;
 				$post_type_label = $post_type_item->label;
 				$ignore_type     = kadence()->get_post_types_to_ignore();
+				$panel_name = 'all_posts';
+				$panel_priority = 10;
 				if ( ! in_array( $post_type_name, $ignore_type, true ) ) {
+					if ( $post_type_name === 'ld-exam' ) {
+						$panel_name = 'learndash';
+						$panel_priority = 40;
+					}
 					$add_extras = true;
 					$extras_post_types[ $post_type_name . '_layout' ] = array(
 						'title'    => $post_type_label . ' ' . __( 'Layout', 'kadence' ),
-						'panel'    => 'custom_post',
-						'priority' => 10,
+						'panel'    => $panel_name,
+						'priority' => $panel_priority,
 					);
 					$extras_post_types[ $post_type_name . '_layout_design' ] = array(
 						'title'    => $post_type_label . ' ' . __( 'Layout', 'kadence' ),
-						'panel'    => 'custom_post',
-						'priority' => 10,
+						'panel'    => $panel_name,
+						'priority' => $panel_priority,
 						'type'     => 'design-hidden',
 					);
-					$extras_post_types[ $post_type_name . '_archive' ] = array(
-						'title'    => $post_type_label . ' ' . __( 'Archive', 'kadence' ),
-						'panel'    => 'custom_post',
-						'priority' => 10,
-					);
-					$extras_post_types[ $post_type_name . '_archive_design' ] = array(
-						'title'    => $post_type_label . ' ' . __( 'Archive', 'kadence' ),
-						'panel'    => 'custom_post',
-						'priority' => 10,
-						'type'     => 'design-hidden',
-					);
+					if ( $post_type_name !== 'ld-exam' ) {
+						$extras_post_types[ $post_type_name . '_archive' ] = array(
+							'title'    => $post_type_label . ' ' . __( 'Archive', 'kadence' ),
+							'panel'    => $panel_name,
+							'priority' => $panel_priority,
+						);
+						$extras_post_types[ $post_type_name . '_archive_design' ] = array(
+							'title'    => $post_type_label . ' ' . __( 'Archive', 'kadence' ),
+							'panel'    => $panel_name,
+							'priority' => $panel_priority,
+							'type'     => 'design-hidden',
+						);
+					}
 				}
 			}
 			if ( $add_extras ) {
+				$extras_post_types['custom_posts_placeholder'] = array(
+					'title'    => __( 'Custom Post Types', 'kadence' ),
+					'panel'    => 'all_posts',
+					'priority' => 9,
+				);
 				$final_sections = array_merge(
 					$sections,
 					$extras_post_types
 				);
+
 			} else {
 				$final_sections = $sections;
 			}
@@ -1948,6 +1967,9 @@ class Theme_Customizer {
 			--global-heading-font: ' . ( 'inherit' !== kadence()->sub_option( 'heading_font', 'family' ) ? kadence()->sub_option( 'heading_font', 'family' ) : 'var(--global-base-font)' ) . ';
 		}';
 		wp_add_inline_style( 'kadence-customizer-controls', wp_strip_all_tags( $css ) );
+		if ( function_exists( 'wp_set_script_translations' ) ) {
+			wp_set_script_translations( 'kadence-customizer-controls', 'kadence' );
+		}
 	}
 	/**
 	 * Generates the color output.

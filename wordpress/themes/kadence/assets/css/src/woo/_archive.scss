@@ -98,6 +98,7 @@ select.orderby {
          a.woocommerce-loop-image-link {
             position: relative;
             display: block;
+			outline-offset: -5px;
             }
             .product-action-wrap {
                 margin-top: 1em;
@@ -146,6 +147,9 @@ select.orderby {
               font-size: 0.85em;
           }
           .button {
+			.kadence-svg-iconset {
+				margin-left: 0.5em;
+			}
             .kadence-spinner-svg, .kadence-check-svg {
                 display:none;
             }
@@ -209,6 +213,16 @@ select.orderby {
              padding-right: 5.4em;
           }
       }
+		.products.align-buttons-bottom li.product .entry-content-wrap {
+			.star-rating {
+				float: none;
+				margin-left: 0;
+				margin-bottom: 0.5em;
+			}
+			.star-rating ~ .price {
+				padding:0;
+			}
+		}
       ul.products.woo-archive-btn-button {
         .button {
             color: var(--global-palette-btn);

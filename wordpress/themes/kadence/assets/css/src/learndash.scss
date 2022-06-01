@@ -65,13 +65,13 @@
 .ld-course-list-items .ld_course_grid.entry .thumbnail.course .ld_course_grid_price.ribbon-enrolled:before, .ld-course-list-items .ld_course_grid.entry .thumbnail.course .ld_course_grid_price:before {
     display:none;
 }
-.site .ld-course-list-items .ld_course_grid.entry.grid-loop-boxed .entry-content-wrap {
+.wp-site-blocks .ld-course-list-items .ld_course_grid.entry.grid-loop-boxed .entry-content-wrap {
     padding: 2rem;
 }
-.site .ld-course-list-items .ld_course_grid.entry.grid-loop-unboxed .entry-content-wrap {
+.wp-site-blocks .ld-course-list-items .ld_course_grid.entry.grid-loop-unboxed .entry-content-wrap {
     padding: 1rem 0;
 }
-.site .ld-course-list-items .ld_course_grid.entry .entry-content-wrap {
+.wp-site-blocks .ld-course-list-items .ld_course_grid.entry .entry-content-wrap {
 	display: flex;
 	flex-grow: 1;
 	color: var(--global-palette5);
@@ -117,7 +117,7 @@ margin-left: 0;
 margin-top: 0;
 }
 // Temp Fix till learndash updates their css.
-.site .learndash-wrapper .ld-item-list .ld-item-list-item .ld-item-name {
+.wp-site-blocks .learndash-wrapper .ld-item-list .ld-item-list-item .ld-item-name {
     flex: 1;
 }
 body.ld-in-focus-mode .learndash-wrapper, body.ld-in-focus-mode, .learndash-wrapper .ld-focus .ld-focus-header .ld-brand-logo {

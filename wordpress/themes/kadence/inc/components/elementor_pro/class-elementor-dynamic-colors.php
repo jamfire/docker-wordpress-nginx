@@ -88,7 +88,7 @@ if ( class_exists( '\ElementorPro\Modules\DynamicTags\Tags\Base\Data_Tag' ) ) {
 		 *
 		 * @return void
 		 */
-		protected function _register_controls() {
+		protected function register_controls() {
 
 			$variables = array(
 				'palette1' => __( '1 - Accent', 'kadence' ),

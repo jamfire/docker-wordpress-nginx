@@ -18,7 +18,7 @@ get_header();
 /**
  * Hook for anything before main tag
  */
-do_action( 'kadence_tribe_archive_events_before_template' );
+do_action( 'kadence_tribe_events_before_main_tag' );
 echo tribe( Template_Bootstrap::class )->get_view_html();
-do_action( 'kadence_tribe_archive_events_after_template' );
+do_action( 'kadence_tribe_events_after_main_tag' );
 get_footer();

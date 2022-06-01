@@ -119,7 +119,7 @@ class Nav_Widget_Settings {
 			$nav_menu_args['show_toggles']    = true;
 			$nav_menu_args['container_class'] = 'collapse-sub-navigation';
 			$nav_menu_args['menu_class']      = 'menu has-collapse-sub-nav';
-			if ( ! isset( $nav_menu_args['menu_id'] ) ) {
+			if ( ! isset( $nav_menu_args['menu_id'] ) && isset( $args['widget_id'] ) ) {
 				$nav_menu_args['menu_id'] = 'menu-' . $args['widget_id'];
 			}
 		}

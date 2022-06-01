@@ -573,7 +573,8 @@ class Theme_Meta {
 		} else {
 			$post_type_name = $post_type;
 		}
-		if ( 'kadence_element' === $post_type || 'kadence_conversions' === $post_type ) {
+		$ignore_type       = kadence()->get_public_post_types_to_ignore();
+		if ( in_array( $post_type, $ignore_type, true ) ) {
 			return;
 		}
 		$boxed            = 'boxed';
@@ -702,6 +703,9 @@ class Theme_Meta {
 			$asset['dependencies'],
 			$asset['version']
 		);
+		if ( function_exists( 'wp_set_script_translations' ) ) {
+			wp_set_script_translations( 'kadence-meta', 'kadence' );
+		}
 	}
 }
 Theme_Meta::get_instance();

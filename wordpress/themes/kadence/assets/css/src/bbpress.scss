@@ -166,14 +166,14 @@ div.bbp-template-notice.error, div.bbp-template-notice.warning {
 	}
 }
 // Form.
-.site .bbpress-topic-meta .bbp-breadcrumb {
+.wp-site-blocks .bbpress-topic-meta .bbp-breadcrumb {
     display: inline-flex;
     float: none;
 }
-.site .bbpress-topic-meta .bbp-breadcrumb p {
+.wp-site-blocks .bbpress-topic-meta .bbp-breadcrumb p {
     margin: 0;
 }
-.site .bbpress-topic-meta .bbp-breadcrumb p a {
+.wp-site-blocks .bbpress-topic-meta .bbp-breadcrumb p a {
     text-decoration: underline;
 }
 #bbpress-forums .bbp-topics > li.bbp-header {
@@ -200,7 +200,7 @@ div.bbp-template-notice.error, div.bbp-template-notice.warning {
 #bbpress-forums li.bbp-forum-info a.bbp-topic-permalink, #bbpress-forums li.bbp-topic-title a.bbp-topic-permalink, #bbpress-forums li.bbp-forum-info a.bbp-forum-title {
     font-size: 120%;
 }
-.site #bbpress-forums .bbp-forum-info .bbp-forum-content {
+.wp-site-blocks #bbpress-forums .bbp-forum-info .bbp-forum-content {
     color: var(--global-palette6);
     font-size: 80%;
 }
@@ -247,7 +247,7 @@ li.bbp-body li.bbp-topic-freshness, li.bbp-body li.bbp-topic-freshness a {
 .topic.type-topic>.entry-content-wrap {
     padding: 0;
 }
-.site .bbp-pagination-count {
+.wp-site-blocks .bbp-pagination-count {
     font-size: 80%;
     font-weight: normal;
     font-style: italic;

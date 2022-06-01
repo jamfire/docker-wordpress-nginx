@@ -19,7 +19,7 @@ if ( ! kadence()->has_sidebar() ) {
 kadence()->print_styles( 'kadence-sidebar' );
 
 ?>
-<aside id="secondary" role="complementary" class="primary-sidebar widget-area <?php echo esc_attr( kadence()->sidebar_id_class() ); ?> sidebar-link-style-<?php echo esc_attr( kadence()->option('sidebar_link_style') ); ?>">
+<aside id="secondary" role="complementary" class="primary-sidebar widget-area <?php echo esc_attr( kadence()->sidebar_id_class() ); ?> sidebar-link-style-<?php echo esc_attr( kadence()->option( 'sidebar_link_style' ) ); ?>">
 	<div class="sidebar-inner-wrap">
 		<?php
 		/**

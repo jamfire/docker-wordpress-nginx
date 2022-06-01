@@ -589,6 +589,15 @@ class ItemComponent extends Component {
 										this.updateValues( { date: value } );
 									} }
 								/>
+								{ this.state.item.date && (
+									<ToggleControl
+										label={ __( 'Show Time?', 'kadence' ) }
+										checked={ this.state.item.dateTime ? this.state.item.dateTime : this.props.item.dateTime }
+										onChange={ ( value ) => {
+											this.updateValues( { dateTime: value }, this.props.index );
+										} }
+									/>
+								) }
 								{ undefined !== this.state.item.dateLabel && this.state.item.date && (
 									<div className="meta-label-control">
 										<span className="sorter-control-title">{ __( 'Date Label', 'kadence' ) }</span>
@@ -625,6 +634,24 @@ class ItemComponent extends Component {
 										this.updateValues( { dateUpdated: value } );
 									} }
 								/>
+								{ this.state.item.dateUpdated && (
+									<ToggleControl
+										label={ __( 'Show only if different from publish date?', 'kadence' ) }
+										checked={ this.state.item.dateUpdatedDifferent ? this.state.item.dateUpdatedDifferent : this.props.item.dateUpdatedDifferent }
+										onChange={ ( value ) => {
+											this.updateValues( { dateUpdatedDifferent: value }, this.props.index );
+										} }
+									/>
+								) }
+								{ this.state.item.dateUpdated && (
+									<ToggleControl
+										label={ __( 'Show Time?', 'kadence' ) }
+										checked={ this.state.item.dateUpdatedTime ? this.state.item.dateUpdatedTime : this.props.item.dateUpdatedTime }
+										onChange={ ( value ) => {
+											this.updateValues( { dateUpdatedTime: value }, this.props.index );
+										} }
+									/>
+								) }
 								{ undefined !== this.state.item.dateUpdatedLabel && this.state.item.dateUpdated && (
 									<div className="meta-label-control">
 										<span className="sorter-control-title">{ __( 'Updated Date Label', 'kadence' ) }</span>

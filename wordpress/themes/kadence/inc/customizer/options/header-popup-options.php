@@ -114,6 +114,24 @@ $settings = array(
 			'responsive' => false,
 		),
 	),
+	'enable_popup_body_animate' => array(
+		'control_type' => 'kadence_switch_control',
+		'sanitize'     => 'kadence_sanitize_toggle',
+		'section'      => 'header_popup',
+		'priority'     => 4,
+		'transport'    => 'refresh',
+		'default'      => kadence()->default( 'enable_popup_body_animate' ),
+		'label'        => esc_html__( 'Move Body with toggle?', 'kadence' ),
+		'context'      => array(
+			array(
+				'setting'    => 'header_popup_layout',
+				'operator'   => 'sub_object_contains',
+				'sub_key'    => 'layout',
+				'responsive' => false,
+				'value'      => 'sidepanel',
+			),
+		),
+	),
 	'header_popup_animation' => array(
 		'control_type' => 'kadence_radio_icon_control',
 		'section'      => 'header_popup',

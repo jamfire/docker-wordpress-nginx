@@ -218,7 +218,7 @@ class KadenceThemeLayout extends Component {
 							} }
 						/>
 						<RadioIconComponent
-							label={ kadenceMetaParams.post_type_name + ' ' + __( 'Title' ) }
+							label={ kadenceMetaParams.post_type_name + ' ' + __( 'Title', 'kadence' ) }
 							customClass="three-col-short"
 							value={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_title && '' !== this.props.meta._kad_post_title ? this.props.meta._kad_post_title : 'default' ) }
 							options={ newTitleOptions }
@@ -237,7 +237,7 @@ class KadenceThemeLayout extends Component {
 							} }
 						/>
 						<RadioIconComponent
-							label={ kadenceMetaParams.post_type_name + ' ' + __( 'Layout' ) }
+							label={ kadenceMetaParams.post_type_name + ' ' + __( 'Layout', 'kadence' ) }
 							customClass="three-col-square"
 							value={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_layout && '' !== this.props.meta._kad_post_layout ? this.props.meta._kad_post_layout : 'default' ) }
 							options={ sidebarOptions }
@@ -278,7 +278,7 @@ class KadenceThemeLayout extends Component {
 							</div>
 						) }
 						<RadioIconComponent
-							label={ __( 'Content Style' ) }
+							label={ __( 'Content Style', 'kadence' ) }
 							value={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_content_style && '' !== this.props.meta._kad_post_content_style ? this.props.meta._kad_post_content_style : 'default' ) }
 							customClass="three-col-short"
 							options={ boxedOptions }
@@ -290,11 +290,14 @@ class KadenceThemeLayout extends Component {
 								document.body.classList.remove( 'post-content-style-boxed' );
 								document.body.classList.remove( 'post-content-style-unboxed' );
 								document.body.classList.add( 'post-content-style-' + boxed );
+								document.body.classList.remove( 'admin-color-pcs-boxed' );
+								document.body.classList.remove( 'admin-color-pcs-unboxed' );
+								document.body.classList.add( 'admin-color-pcs-' + boxed );
 								this.props.setMetaFieldValue( value, '_kad_post_content_style' );
 							} }
 						/>
 						<RadioIconComponent
-							label={ __( 'Content Vertical Padding' ) }
+							label={ __( 'Content Vertical Padding', 'kadence' ) }
 							value={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_vertical_padding && '' !== this.props.meta._kad_post_vertical_padding ? this.props.meta._kad_post_vertical_padding : 'default' ) }
 							options={ paddingOptions }
 							customClass="three-col-short"
@@ -314,7 +317,7 @@ class KadenceThemeLayout extends Component {
 						{ kadenceMetaParams.supports_feature && (
 							<Fragment>
 								<RadioIconComponent
-									label={ __( 'Show Featured Image' ) }
+									label={ __( 'Show Featured Image', 'kadence' ) }
 									value={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_feature && '' !== this.props.meta._kad_post_feature ? this.props.meta._kad_post_feature : 'default' ) }
 									options={ featuredOptions }
 									customClass="three-col-short"
@@ -324,7 +327,7 @@ class KadenceThemeLayout extends Component {
 								/>
 								{ ( ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_feature && 'show' === this.props.meta._kad_post_feature ) || ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_feature && 'default' === this.props.meta._kad_post_feature && 'show' === kadenceMetaParams.feature ) || ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_feature && '' === this.props.meta._kad_post_feature && 'show' === kadenceMetaParams.feature ) ) && (
 									<RadioIconComponent
-										label={ __( 'Featured Image Position' ) }
+										label={ __( 'Featured Image Position', 'kadence' ) }
 										value={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_feature_position && '' !== this.props.meta._kad_post_feature_position ? this.props.meta._kad_post_feature_position : 'default' ) }
 										options={ featuredPositionOptions }
 										customClass="two-col-short"
@@ -337,14 +340,14 @@ class KadenceThemeLayout extends Component {
 						) }
 						<div style={{ paddingTop: 30 + 'px' }}></div>
 						<ToggleControl
-							label={ __( 'Disable Header' ) }
+							label={ __( 'Disable Header', 'kadence' ) }
 							checked={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_header && '' !== this.props.meta._kad_post_header ? this.props.meta._kad_post_header : false ) }
 							onChange={ ( value ) => {
 								this.props.setMetaFieldValue( value, '_kad_post_header' );
 							} }
 						/>
 						<ToggleControl
-							label={ __( 'Disable Footer' ) }
+							label={ __( 'Disable Footer', 'kadence' ) }
 							checked={ ( undefined !== this.props.meta && undefined !== this.props.meta._kad_post_footer && '' !== this.props.meta._kad_post_footer ? this.props.meta._kad_post_footer : false ) }
 							onChange={ ( value ) => {
 								this.props.setMetaFieldValue( value, '_kad_post_footer' );

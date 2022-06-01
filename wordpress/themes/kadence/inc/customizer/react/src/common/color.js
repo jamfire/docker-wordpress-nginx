@@ -15,6 +15,7 @@ const {
 	Tooltip,
 	Icon,
 	TabPanel,
+	GradientPicker,
 	__experimentalGradientPicker,
 } = wp.components;
 
@@ -32,7 +33,7 @@ class ColorControl extends Component {
 			isPalette: ( this.props.color && this.props.color.includes( 'palette' ) ? true : false ),
 			palette: ( this.props.presetColors && this.props.presetColors ? this.props.presetColors : [] ),
 			activePalette: ( this.props.presetColors && this.props.presetColors.active ? this.props.presetColors.active : 'palette' ),
-			supportGradient: ( undefined === __experimentalGradientPicker ? false : true ),
+			supportGradient: ( undefined === GradientPicker && undefined === __experimentalGradientPicker ? false : true ),
 		};
 	}
 
@@ -64,6 +65,7 @@ class ColorControl extends Component {
 				overflow: 'hidden',
 			},
 		};
+		const GradientPickerComponent = GradientPicker || __experimentalGradientPicker || '';
 		const position = ( this.props.position ? this.props.position : "top right" );
 		const showingGradient = ( this.props.allowGradient && this.state.supportGradient ? true : false );
 		return (
@@ -111,7 +113,7 @@ class ColorControl extends Component {
 												if ( 'gradient' === tab.name ) {
 													tabout = (
 														<Fragment>
-															<__experimentalGradientPicker
+															<GradientPickerComponent
 																value={ this.state.color && this.state.color.includes( 'gradient' ) ? this.state.color : '' }
 																onChange={ ( gradient ) => this.onChangeGradientComplete( gradient ) }
 															/>

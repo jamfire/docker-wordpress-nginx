@@ -544,14 +544,14 @@ Theme_Customizer::add_settings(
 			'live_method'     => array(
 				array(
 					'type'     => 'css',
-					'selector' => '.site .topic-title .bbpress-topic-meta',
+					'selector' => '.wp-site-blocks .topic-title .bbpress-topic-meta',
 					'property' => 'color',
 					'pattern'  => '$',
 					'key'      => 'color',
 				),
 				array(
 					'type'     => 'css',
-					'selector' => '.site .topic-title .bbpress-topic-meta a:hover',
+					'selector' => '.wp-site-blocks .topic-title .bbpress-topic-meta a:hover',
 					'property' => 'color',
 					'pattern'  => '$',
 					'key'      => 'hover',

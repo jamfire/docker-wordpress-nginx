@@ -37,13 +37,21 @@ if ( isset( $elements ) && is_array( $elements ) ) {
 		}
 	}
 	if ( isset( $elements['date'] ) && $elements['date'] ) {
-		$title_meta[] = 'date';
+		if ( isset( $elements['dateTime'] ) && $elements['dateTime'] ) {
+			$title_meta[] = 'dateTime';
+		} else {
+			$title_meta[] = 'date';
+		}
 		if ( isset( $elements['dateEnableLabel'] ) && $elements['dateEnableLabel'] ) {
 			$meta_labels['date'] = ( isset( $elements['dateLabel'] ) && ! empty( $elements['dateLabel'] ) ? $elements['dateLabel'] : __( 'Posted on', 'kadence' ) );
 		}
 	}
 	if ( isset( $elements['dateUpdated'] ) && $elements['dateUpdated'] ) {
-		$title_meta[] = 'dateUpdated';
+		if ( isset( $elements['dateUpdatedTime'] ) && $elements['dateUpdatedTime'] ) {
+			$title_meta[] = 'dateUpdatedTime';
+		} else {
+			$title_meta[] = 'dateUpdated';
+		}
 		if ( isset( $elements['dateUpdatedEnableLabel'] ) && $elements['dateUpdatedEnableLabel'] ) {
 			$meta_labels['dateUpdated'] = ( isset( $elements['dateUpdatedLabel'] ) && ! empty( $elements['dateUpdatedLabel'] ) ? $elements['dateUpdatedLabel'] : __( 'Updated on', 'kadence' ) );
 		}
@@ -76,11 +84,19 @@ $post_type_obj = get_post_type_object( get_post_type() );
 				if ( post_type_supports( $post_type_obj->name, 'author' ) ) {
 					$author_id = get_post_field( 'post_author', get_the_ID() );
 					if ( $author_link ) {
-						$author_string = sprintf(
-							'<span class="author vcard"><a class="url fn n" href="%1$s">%2$s</a></span>',
-							esc_url( get_author_posts_url( $author_id ) ),
-							esc_html( get_the_author_meta( 'display_name', $author_id ) )
-						);
+						if ( get_the_author_meta( 'url' ) && apply_filters( 'kadence_author_use_profile_link', true ) ) {
+							$author_string = sprintf(
+								'<span class="author vcard"><a class="url fn n" href="%1$s">%2$s</a></span>',
+								esc_url( get_the_author_meta( 'url', $author_id ) ),
+								esc_html( get_the_author_meta( 'display_name', $author_id ) )
+							);
+						} else {
+							$author_string = sprintf(
+								'<span class="author vcard"><a class="url fn n" href="%1$s">%2$s</a></span>',
+								esc_url( get_author_posts_url( $author_id ) ),
+								esc_html( get_the_author_meta( 'display_name', $author_id ) )
+							);
+						}
 					} else {
 						$author_string = sprintf(
 							'<span class="author vcard"><span class="fn n">%1$s</span></span>',
@@ -93,11 +109,19 @@ $post_type_obj = get_post_type_object( get_post_type() );
 					if ( $author_image ) {
 						$author_output .= '<span class="author-avatar"' . ( $author_image_size && 25 !== $author_image_size ? ' style="width:' . esc_attr( $author_image_size ) . 'px; height:' . esc_attr( $author_image_size ) . 'px;"' : '' ) . '>';
 						if ( $author_link ) {
-							$author_output .= sprintf(
-								'<a class="author-image" href="%1$s">%2$s</a>',
-								esc_url( get_author_posts_url( $author_id ) ),
-								get_avatar( $author_id, $author_image_size )
-							);
+							if ( get_the_author_meta( 'url' ) && apply_filters( 'kadence_author_use_profile_link', true ) ) {
+								$author_output .= sprintf(
+									'<a class="author-image" href="%1$s">%2$s</a>',
+									esc_url( get_the_author_meta( 'url', $author_id ) ),
+									get_avatar( $author_id, ( 2 * $author_image_size ) )
+								);
+							} else {
+								$author_output .= sprintf(
+									'<a class="author-image" href="%1$s">%2$s</a>',
+									esc_url( get_author_posts_url( $author_id ) ),
+									get_avatar( $author_id, $author_image_size )
+								);
+							}
 						} else {
 							$author_output .= sprintf(
 								'<span class="author-image">%1$s</span>',
@@ -144,12 +168,75 @@ $post_type_obj = get_post_type_object( get_post_type() );
 					<?php
 				}
 				break;
-			case 'dateUpdated':
+			case 'dateTime':
+				$time_string = '<time class="entry-date published updated" datetime="%1$s">%2$s %3$s</time>';
+				if ( get_the_time( 'U' ) !== get_the_modified_time( 'U' ) ) {
+					$time_string = '<time class="entry-date published" datetime="%1$s">%2$s %3$s</time><time class="updated" datetime="%4$s">%5$s %6$s</time>';
+				}
+
 				$time_string = sprintf(
-					'<time class="entry-date published updated" datetime="%1$s">%2$s</time>',
+					$time_string,
+					esc_attr( get_the_date( 'c' ) ),
+					esc_html( get_the_date() ),
+					esc_html( get_the_time() ),
 					esc_attr( get_the_modified_date( 'c' ) ),
-					esc_html( get_the_modified_date() )
+					esc_html( get_the_modified_date() ),
+					esc_html( get_the_modified_time() )
 				);
+				if ( ! empty( $time_string ) ) {
+					?>
+					<span class="posted-on">
+						<?php
+						if ( 'customicon' === $meta_divider ) {
+							kadence()->print_icon( 'hoursAlt', '', false );
+						}
+						if ( isset( $meta_labels['date'] ) ) {
+							echo '<span class="meta-label">' . esc_html( $meta_labels['date'] ) . '</span>';
+						}
+						echo $time_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						?>
+					</span>
+					<?php
+				}
+				break;
+			case 'dateUpdated':
+				if ( isset( $elements['dateUpdatedDifferent'] ) && $elements['dateUpdatedDifferent'] && get_the_date() === get_the_modified_date() ) {
+					$time_string = '';
+				} else {
+					$time_string = sprintf(
+						'<time class="entry-date published updated" datetime="%1$s">%2$s</time>',
+						esc_attr( get_the_modified_date( 'c' ) ),
+						esc_html( get_the_modified_date() )
+					);
+				}
+				if ( ! empty( $time_string ) ) {
+					?>
+					<span class="updated-on">
+						<?php
+						if ( 'customicon' === $meta_divider ) {
+							kadence()->print_icon( 'hoursAlt', '', false );
+						}
+						if ( isset( $meta_labels['dateUpdated'] ) ) {
+							echo '<span class="meta-label">' . esc_html( $meta_labels['dateUpdated'] ) . '</span>';
+						}
+						echo $time_string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						?>
+					</span>
+					<?php
+				}
+				break;
+			case 'dateUpdatedTime':
+				$publish_time = get_the_time( 'U' ) + ( 60 * 5 );
+				if ( isset( $elements['dateUpdatedDifferent'] ) && $elements['dateUpdatedDifferent'] && $publish_time > get_the_modified_time( 'U' ) ) {
+					$time_string = '';
+				} else {
+					$time_string = sprintf(
+						'<time class="entry-date published updated" datetime="%1$s">%2$s %3$s</time>',
+						esc_attr( get_the_modified_date( 'c' ) ),
+						esc_html( get_the_modified_date() ),
+						esc_html( get_the_modified_time() )
+					);
+				}
 				if ( ! empty( $time_string ) ) {
 					?>
 					<span class="updated-on">

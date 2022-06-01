@@ -24,17 +24,7 @@ function archive_markup() {
  * @return array $classes for the archive header.
  */
 function get_archive_hero_classes() {
-	$slug      = ( is_search() && ! is_post_type_archive( 'product' ) ? 'search' : get_post_type() );
-	if ( empty( $slug ) ) {
-		$queried_object = get_queried_object();
-		if ( property_exists( $queried_object, 'taxonomy' ) ) {
-			$current_tax = get_taxonomy( $queried_object->taxonomy );
-			if ( property_exists( $current_tax, 'object_type' ) ) {
-				$post_types = $current_tax->object_type;
-				$slug = $post_types[0];
-			}
-		}
-	}
+	$slug      = get_archive_post_type_slug();
 	$classes   = array();
 	$classes[] = 'entry-hero';
 	$classes[] = $slug . '-archive-hero-section';
@@ -44,15 +34,23 @@ function get_archive_hero_classes() {
 }
 
 /**
- * Get Archive header classes.
+ * Get Archive post type slug.
  *
- * @return array $classes for the archive header.
+ * @return string $slug for the archive header.
  */
-function get_archive_title_classes() {
-	$slug      = ( is_search() && ! is_post_type_archive( 'product' ) ? 'search' : get_post_type() );
+function get_archive_post_type_slug() {
+	if ( is_search() ) {
+		if ( is_post_type_archive( 'product' ) ) {
+			$slug = 'product';
+		} else {
+			$slug = 'search';
+		}
+	} else {
+		$slug = get_post_type();
+	}
 	if ( empty( $slug ) ) {
 		$queried_object = get_queried_object();
-		if ( property_exists( $queried_object, 'taxonomy' ) ) {
+		if ( is_object( $queried_object ) && property_exists( $queried_object, 'taxonomy' ) ) {
 			$current_tax = get_taxonomy( $queried_object->taxonomy );
 			if ( property_exists( $current_tax, 'object_type' ) ) {
 				$post_types = $current_tax->object_type;
@@ -60,6 +58,16 @@ function get_archive_title_classes() {
 			}
 		}
 	}
+	return apply_filters( 'kadence_archive_post_type_slug', $slug );
+}
+
+/**
+ * Get Archive header classes.
+ *
+ * @return array $classes for the archive header.
+ */
+function get_archive_title_classes() {
+	$slug      = get_archive_post_type_slug();
 	$classes   = array();
 	$classes[] = 'entry-header';
 	$classes[] = $slug . '-archive-title';

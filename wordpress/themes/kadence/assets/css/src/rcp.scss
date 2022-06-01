@@ -2,7 +2,7 @@
 // Styles for Restrict Content Pro
 // @media screen and (min-width: $landscape-phone-plus-query) {
 // }
-.rcp_form .rcp_user_fieldset p, .site .rcp_form .rcp_login_link {
+.rcp_form .rcp_user_fieldset p, .wp-site-blocks .rcp_form .rcp_login_link {
 	margin: 0 0 0.8em;
 }
 .rcp_subscription_level .rcp_level_description {
@@ -11,7 +11,7 @@
     border: 0;
     padding: 0.5em 0 0;
 }
-.site {
+.wp-site-blocks {
 	#rcp_registration_form {
 		padding: 0;
 	}
@@ -89,7 +89,7 @@
 		border-top: 1px solid var(--global-palette7);
 	}
 }
-.site #rcp_profile_editor_form input[type=email], .site #rcp_profile_editor_form input[type=password], .site #rcp_profile_editor_form input[type=text], .site #rcp_profile_editor_form select {
+.wp-site-blocks #rcp_profile_editor_form input[type=email], .wp-site-blocks #rcp_profile_editor_form input[type=password], .wp-site-blocks #rcp_profile_editor_form input[type=text], .wp-site-blocks #rcp_profile_editor_form select {
     width: 100%;
 }
 #rcp_profile_editor_form fieldset {

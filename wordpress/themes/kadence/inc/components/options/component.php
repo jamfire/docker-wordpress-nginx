@@ -486,6 +486,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 					'lightbox' => false,
 					'enable_popup_body_animate' => true,
 					// Typography.
+					'font_rendering' => false,
 					'base_font' => array(
 						'size' => array(
 							'desktop' => 17,
@@ -2358,9 +2359,12 @@ class Component implements Component_Interface, Templating_Component_Interface {
 						'authorEnableLabel'      => true,
 						'authorLabel'            => '',
 						'date'                   => true,
+						'dateTime'               => false,
 						'dateEnableLabel'        => false,
 						'dateLabel'              => '',
 						'dateUpdated'            => false,
+						'dateUpdatedTime'        => false,
+						'dateUpdatedDifferent'   => false,
 						'dateUpdatedEnableLabel' => false,
 						'dateUpdatedLabel'       => '',
 						'comments'               => false,
@@ -2537,9 +2541,12 @@ class Component implements Component_Interface, Templating_Component_Interface {
 						'authorEnableLabel'      => true,
 						'authorLabel'            => '',
 						'date'                   => true,
+						'dateTime'               => false,
 						'dateEnableLabel'        => false,
 						'dateLabel'              => '',
 						'dateUpdated'            => false,
+						'dateUpdatedTime'        => false,
+						'dateUpdatedDifferent'   => false,
 						'dateUpdatedEnableLabel' => false,
 						'dateUpdatedLabel'       => '',
 						'categories'             => false,
@@ -2630,9 +2637,12 @@ class Component implements Component_Interface, Templating_Component_Interface {
 						'authorEnableLabel'      => true,
 						'authorLabel'            => '',
 						'date'                   => true,
+						'dateTime'               => false,
 						'dateEnableLabel'        => false,
 						'dateLabel'              => '',
 						'dateUpdated'            => false,
+						'dateUpdatedTime'        => false,
+						'dateUpdatedDifferent'   => false,
 						'dateUpdatedEnableLabel' => false,
 						'dateUpdatedLabel'       => '',
 						'categories'             => false,
@@ -2767,9 +2777,12 @@ class Component implements Component_Interface, Templating_Component_Interface {
 						'authorEnableLabel'      => true,
 						'authorLabel'            => '',
 						'date'                   => true,
+						'dateTime'               => false,
 						'dateEnableLabel'        => false,
 						'dateLabel'              => '',
 						'dateUpdated'            => false,
+						'dateUpdatedTime'        => false,
+						'dateUpdatedDifferent'   => false,
 						'dateUpdatedEnableLabel' => false,
 						'dateUpdatedLabel'       => '',
 						'categories'             => false,
@@ -4137,6 +4150,8 @@ class Component implements Component_Interface, Templating_Component_Interface {
 						'enabled' => false,
 						'show_title' => true,
 					),
+					// Learndash Assignment.
+					'sfwd-assignment_comments' => true,
 					// MISC
 					'ie11_basic_support' => false,
 				)
@@ -4288,9 +4303,12 @@ class Component implements Component_Interface, Templating_Component_Interface {
 						'authorEnableLabel'      => true,
 						'authorLabel'            => '',
 						'date'                   => true,
+						'dateTime'               => false,
 						'dateEnableLabel'        => false,
 						'dateLabel'              => '',
 						'dateUpdated'            => false,
+						'dateUpdatedTime'        => false,
+						'dateUpdatedDifferent'   => false,
 						'dateUpdatedEnableLabel' => false,
 						'dateUpdatedLabel'       => '',
 						'comments'               => false,
@@ -4368,9 +4386,12 @@ class Component implements Component_Interface, Templating_Component_Interface {
 						'authorEnableLabel'      => true,
 						'authorLabel'            => '',
 						'date'                   => true,
+						'dateTime'               => false,
 						'dateEnableLabel'        => false,
 						'dateLabel'              => '',
 						'dateUpdated'            => false,
+						'dateUpdatedTime'        => false,
+						'dateUpdatedDifferent'   => false,
 						'dateUpdatedEnableLabel' => false,
 						'dateUpdatedLabel'       => '',
 						'categories'             => false,
@@ -4488,19 +4509,19 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	public function sub_option( $key, $first_key = '', $second_key = '', $third_key = '' ) {
 		$value = $this->option( $key );
 		if ( ! empty( $first_key ) ) {
-			if ( isset( $value[ $first_key ] ) && ! empty( $value[ $first_key ] ) ) {
+			if ( isset( $value[ $first_key ] ) && ( ! empty( $value[ $first_key ] ) || 0 === $value[ $first_key ] ) ) {
 				$value = $value[ $first_key ];
 			} else {
 				$value = null;
 			}
 			if ( ! empty( $second_key ) ) {
-				if ( isset( $value[ $second_key ] ) && ! empty( $value[ $second_key ] ) ) {
+				if ( isset( $value[ $second_key ] ) && ( ! empty( $value[ $second_key ] ) || 0 === $value[ $second_key ] ) ) {
 					$value = $value[ $second_key ];
 				} else {
 					$value = null;
 				}
 				if ( ! empty( $third_key ) ) {
-					if ( isset( $value[ $third_key ] ) && ! empty( $value[ $third_key ] ) ) {
+					if ( isset( $value[ $third_key ] ) &&( ! empty( $value[ $third_key ] ) || 0 === $value[ $third_key ] ) ) {
 						$value = $value[ $third_key ];
 					} else {
 						$value = null;

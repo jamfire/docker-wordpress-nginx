@@ -510,7 +510,7 @@ if ( window.NodeList && ! NodeList.prototype.forEach ) {
 				activeSize = 'mobile',
 				lastScrollTop = 0,
 				activeOffsetTop = 0;
-				if ( kadenceConfig.breakPoints.desktop <= window.innerWidth ) {
+				if ( parseInt( kadenceConfig.breakPoints.desktop ) < window.innerWidth ) {
 					activeSize = 'desktop';
 					if ( desktopSticky ) {
 						desktopSticky.style.position = 'static';
@@ -723,10 +723,15 @@ if ( window.NodeList && ! NodeList.prototype.forEach ) {
 					}
 				}
 		},
-		getTopOffset: function() {
-			var desktopSticky = document.querySelector( '#main-header .kadence-sticky-header:not([data-reveal-scroll-up="true"])' ),
-				mobileSticky  = document.querySelector( '#mobile-header .kadence-sticky-header:not([data-reveal-scroll-up="true"])' ),
-				activeScrollOffsetTop = 0,
+		getTopOffset: function( event = 'scroll' ) {
+			if ( event === 'load' ) {
+				var desktopSticky = document.querySelector( '#main-header .kadence-sticky-header' ),
+					mobileSticky  = document.querySelector( '#mobile-header .kadence-sticky-header' );
+			} else {
+				var desktopSticky = document.querySelector( '#main-header .kadence-sticky-header:not([data-reveal-scroll-up="true"])' ),
+					mobileSticky  = document.querySelector( '#mobile-header .kadence-sticky-header:not([data-reveal-scroll-up="true"])' );
+			}
+			var activeScrollOffsetTop = 0,
 				activeScrollAdminOffsetTop = 0;
 			if ( kadenceConfig.breakPoints.desktop <= window.innerWidth ) {
 				if ( desktopSticky ) {
@@ -757,16 +762,16 @@ if ( window.NodeList && ! NodeList.prototype.forEach ) {
 					activeScrollAdminOffsetTop = 46;
 				}
 			}
-			return Math.floor( activeScrollOffsetTop + activeScrollAdminOffsetTop );
+			return Math.floor( activeScrollOffsetTop + activeScrollAdminOffsetTop + Math.floor( kadenceConfig.scrollOffset ) );
 		},
-		scrollToElement: function( element, history ) {
+		scrollToElement: function( element, history, event = 'scroll' ) {
 			history = (typeof history !== 'undefined') ? history : true;
-			var offsetSticky = window.kadence.getTopOffset();
+			var offsetSticky = window.kadence.getTopOffset( event );
 			var originalTop = Math.floor( element.getBoundingClientRect().top ) - offsetSticky;
 			window.scrollBy( { top: originalTop, left: 0, behavior: 'smooth' } );
 			var checkIfDone = setInterval( function() {
 				var atBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 2;
-				if ( ( Math.floor( element.getBoundingClientRect().top ) - offsetSticky === 0 ) || atBottom ) {
+				if ( ( originalTop >= 0 && ( ( Math.floor( element.getBoundingClientRect().top ) - offsetSticky ) <= 0 ) ) || ( originalTop < 0 && ( ( Math.floor( element.getBoundingClientRect().top ) - offsetSticky ) >= 0 ) ) || atBottom ) {
 					element.tabIndex = '-1';
 					element.focus();
 					if ( element.classList.contains( 'kt-title-item' ) ) {
@@ -844,6 +849,12 @@ if ( window.NodeList && ! NodeList.prototype.forEach ) {
 			if ( document.body.classList.contains( 'no-anchor-scroll' ) ) {
 				return;
 			}
+			window.onhashchange = function() {
+				if ( window.location.hash === '' ) {
+					window.scrollTo({top: 0, behavior: 'smooth'});
+					document.activeElement.blur();
+				}
+			};
 			if ( window.location.hash != '' ) {
 				var id = location.hash.substring( 1 ),
 					element;
@@ -854,7 +865,7 @@ if ( window.NodeList && ! NodeList.prototype.forEach ) {
 				element = document.getElementById( id );
 				if ( element ) {
 					window.setTimeout( function() {
-						window.kadence.scrollToElement( element, false );
+						window.kadence.scrollToElement( element, false, 'load' );
 					}, 100 );
 				}
 			}

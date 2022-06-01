@@ -68,7 +68,6 @@ $profile_url = tutor_utils()->profile_url( $authordata->ID );
 
 			<?php if ( ! $disable_course_share ) { ?>
 				<li class="tutor-social-share">
-					<span><?php esc_html_e( 'Share:', 'kadence' ); ?></span>
 					<?php tutor_social_share(); ?>
 				</li>
 			<?php } ?>

@@ -50,19 +50,21 @@ class Component implements Component_Interface {
 	 * @param object $dynamic_tags the dynamic tags modal.
 	 */
 	public function add_palette_colors( $dynamic_tags ) {
-		// In our Dynamic Tag we use a group named request-variables so we need.
-		// To register that group as well before the tag.
-		\Elementor\Plugin::$instance->dynamic_tags->register_group(
-			'kadence-palette',
-			array(
-				'title' => __( 'Kadence Theme', 'kadence' ),
-			)
-		);
+		if ( apply_filters( 'kadence_theme_add_palette_to_elementor_tags', false ) ) {
+			// In our Dynamic Tag we use a group named request-variables so we need.
+			// To register that group as well before the tag.
+			\Elementor\Plugin::$instance->dynamic_tags->register_group(
+				'kadence-palette',
+				array(
+					'title' => __( 'Kadence Theme', 'kadence' ),
+				)
+			);
 
-		require_once get_template_directory() . '/inc/components/elementor_pro/class-elementor-dynamic-colors.php'; // phpcs:ignore WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
+			require_once get_template_directory() . '/inc/components/elementor_pro/class-elementor-dynamic-colors.php'; // phpcs:ignore WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 
-		// Finally register the tag.
-		$dynamic_tags->register_tag( 'Kadence\Elementor_Pro\Elementor_Dynamic_Colors' );
+			// Finally register the tag.
+			$dynamic_tags->register_tag( 'Kadence\Elementor_Pro\Elementor_Dynamic_Colors' );
+		}
 	}
 	/**
 	 * Elementor Location support.

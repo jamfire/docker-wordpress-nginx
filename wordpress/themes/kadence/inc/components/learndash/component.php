@@ -52,7 +52,7 @@ class Component implements Component_Interface {
 	 * @param array  $filter  Arguments to retrieve posts.
 	 */
 	public function learndash_course_grid_class( $output, $atts, $filter ) {
-		if ( kadence()->option( 'learndash_course_grid' ) ) {
+		if ( defined( 'LEARNDASH_COURSE_GRID_VERSION' ) && version_compare( LEARNDASH_COURSE_GRID_VERSION, '2.0.0', '<' ) && kadence()->option( 'learndash_course_grid' ) ) {
 			// Return if not a grid.
 			if ( $atts['course_grid'] == 'false' || 
 			$atts['course_grid'] === false || 
@@ -81,7 +81,7 @@ class Component implements Component_Interface {
 	 * @param string $template the template to load.
 	 */
 	public function learndash_course_grid_template( $template ) {
-		if ( kadence()->option( 'learndash_course_grid' ) ) {
+		if ( defined( 'LEARNDASH_COURSE_GRID_VERSION' ) && version_compare( LEARNDASH_COURSE_GRID_VERSION, '2.0.0', '<' ) && kadence()->option( 'learndash_course_grid' ) ) {
 			$template = get_template_directory() . '/inc/components/learndash/course_list_template.php';
 		}
 		return $template;

@@ -223,6 +223,14 @@ Theme_Customizer::add_settings(
 				'id'      => 'title_above_breadcrumb_font',
 			),
 		),
+		'font_rendering' => array(
+			'control_type' => 'kadence_switch_control',
+			'sanitize'     => 'kadence_sanitize_toggle',
+			'section'      => 'general_typography',
+			'transport'    => 'refresh',
+			'default'      => kadence()->default( 'font_rendering' ),
+			'label'        => esc_html__( 'Enable Font Smoothing', 'kadence' ),
+		),
 		'google_subsets' => array(
 			'control_type' => 'kadence_check_icon_control',
 			'section'      => 'general_typography',

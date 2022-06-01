@@ -1,6 +1,9 @@
 @import "variables.scss";
 @import "builder-controls.scss";
 @import "icon-controls.scss";
+li#accordion-section-kadence_customizer_custom_posts_placeholder {pointer-events: none;margin: 10px 0 0;}
+li#accordion-section-kadence_customizer_custom_posts_placeholder > h3.accordion-section-title {border: 0;background: transparent;text-transform: uppercase;font-size: 80%;}
+li#accordion-section-kadence_customizer_custom_posts_placeholder > h3.accordion-section-title:after {display: none;}
 .kadence-units .components-dropdown__content .components-popover__content>div {
 	padding: 5px 0;
 	.components-button.components-dropdown-menu__menu-item.has-icon {

@@ -237,7 +237,7 @@ Theme_Customizer::add_settings(
 			'live_method'     => array(
 				array(
 					'type'     => 'css',
-					'selector' => '.site .header-navigation .header-menu-container ul ul li.menu-item > a',
+					'selector' => '.wp-site-blocks .header-navigation .header-menu-container ul ul li.menu-item > a',
 					'property' => 'width',
 					'pattern'  => '$',
 					'key'      => 'size',

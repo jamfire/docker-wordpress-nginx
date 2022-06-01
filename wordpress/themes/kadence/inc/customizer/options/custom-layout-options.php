@@ -297,9 +297,12 @@ foreach ( $all_post_types as $post_type_item ) {
 							'authorEnableLabel'      => true,
 							'authorLabel'            => '',
 							'date'                   => true,
+							'dateTime'               => false,
 							'dateEnableLabel'        => false,
 							'dateLabel'              => '',
 							'dateUpdated'            => false,
+							'dateUpdatedTime'        => false,
+							'dateUpdatedDifferent'   => false,
 							'dateUpdatedEnableLabel' => false,
 							'dateUpdatedLabel'       => '',
 							'comments'               => false,
@@ -1640,9 +1643,12 @@ foreach ( $all_post_types as $post_type_item ) {
 							'authorEnableLabel'      => true,
 							'authorLabel'            => '',
 							'date'                   => true,
+							'dateTime'               => false,
 							'dateEnableLabel'        => false,
 							'dateLabel'              => '',
 							'dateUpdated'            => false,
+							'dateUpdatedTime'        => false,
+							'dateUpdatedDifferent'   => false,
 							'dateUpdatedEnableLabel' => false,
 							'dateUpdatedLabel'       => '',
 							'categories'             => false,
@@ -1848,4 +1854,14 @@ foreach ( $all_post_types as $post_type_item ) {
 		Theme_Customizer::add_settings( $settings );
 	}
 }
-
+Theme_Customizer::add_settings(
+	array( 
+		'info_custom_post_types_placehoder' => array(
+			'control_type' => 'kadence_title_control',
+			'section'      => 'custom_posts_placeholder',
+			'priority'     => 10,
+			'label'        => esc_html__( 'Custom Post Types', 'kadence' ),
+			'settings'     => false,
+		),
+	),
+);

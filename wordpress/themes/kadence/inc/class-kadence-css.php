@@ -489,7 +489,7 @@ class Kadence_CSS {
 			$css->add_property( 'line-height', $font['lineHeight']['desktop'] . $line_type );
 		}
 		$letter_type = ( isset( $font['spacingType'] ) && ! empty( $font['spacingType'] ) ? $font['spacingType'] : 'em' );
-		if ( isset( $font['letterSpacing'] ) && isset( $font['letterSpacing']['desktop'] ) && ! empty( $font['letterSpacing']['desktop'] ) ) {
+		if ( isset( $font['letterSpacing'] ) && isset( $font['letterSpacing']['desktop'] ) && is_numeric( $font['letterSpacing']['desktop'] ) ) {
 			$css->add_property( 'letter-spacing', $font['letterSpacing']['desktop'] . $letter_type );
 		}
 		$family = ( isset( $font['family'] ) && ! empty( $font['family'] ) && 'inherit' !== $font['family'] ? $font['family'] : '' );
@@ -556,8 +556,16 @@ class Kadence_CSS {
 			$css->add_property( 'line-height', $font['lineHeight']['desktop'] . $line_type );
 		}
 		$letter_type = ( isset( $font['spacingType'] ) && ! empty( $font['spacingType'] ) ? $font['spacingType'] : 'em' );
-		if ( isset( $font['letterSpacing'] ) && isset( $font['letterSpacing']['desktop'] ) && ! empty( $font['letterSpacing']['desktop'] ) ) {
+		if ( isset( $font['letterSpacing'] ) && isset( $font['letterSpacing']['desktop'] ) && is_numeric( $font['letterSpacing']['desktop'] ) ) {
 			$css->add_property( 'letter-spacing', $font['letterSpacing']['desktop'] . $letter_type );
+		}
+		$special_inherit = ( isset( $font['family'] ) && ! empty( $font['family'] ) && 'inherit' === $font['family'] ? true : false );
+		if ( $special_inherit ) {
+			if ( ! empty( $inherit ) && 'heading' === $inherit ) {
+				$this->maybe_add_google_variant( $font, $inherit );
+			} else {
+				$this->maybe_add_google_variant( $font );
+			}
 		}
 		$family = ( isset( $font['family'] ) && ! empty( $font['family'] ) && 'inherit' !== $font['family'] ? $font['family'] : '' );
 		if ( ! empty( $family ) ) {
@@ -866,7 +874,7 @@ class Kadence_CSS {
 			if ( ! empty( $image_url ) ) {
 				$repeat            = ( isset( $background['image']['repeat'] ) && ! empty( $background['image']['repeat'] ) ? $background['image']['repeat'] : '' );
 				$size              = ( isset( $background['image']['size'] ) && ! empty( $background['image']['size'] ) ? $background['image']['size'] : '' );
-				$position          = ( isset( $background['image']['position'] ) && is_array( $background['image']['position'] ) && isset( $background['image']['position']['x'] ) && ! empty( $background['image']['position']['x'] ) && isset( $background['image']['position']['y'] ) && ! empty( $background['image']['position']['y'] ) ? ( $background['image']['position']['x'] * 100 ) . '% ' . ( $background['image']['position']['y'] * 100 ) . '%' : 'center' );
+				$position          = ( isset( $background['image']['position'] ) && is_array( $background['image']['position'] ) && isset( $background['image']['position']['x'] ) && is_numeric( $background['image']['position']['x'] ) && isset( $background['image']['position']['y'] ) && is_numeric( $background['image']['position']['y'] ) ? ( $background['image']['position']['x'] * 100 ) . '% ' . ( $background['image']['position']['y'] * 100 ) . '%' : 'center' );
 				$attachement       = ( isset( $background['image']['attachment'] ) && ! empty( $background['image']['attachment'] ) ? $background['image']['attachment'] : '' );
 				$background_string = ( ! empty( $color_type ) ? $color_type . ' ' : '' ) . $image_url . ( ! empty( $repeat ) ? ' ' . $repeat : '' ) . ( ! empty( $position ) ? ' ' . $position : '' ) . ( ! empty( $size ) ? ' ' . $size : '' ) . ( ! empty( $attachement ) ? ' ' . $attachement : '' );
 				$css->add_property( 'background-color', $color_type );
@@ -1126,6 +1134,39 @@ class Kadence_CSS {
 		}
 
 		return $border_string;
+	}
+	/**
+	 * Add google font to array.
+	 *
+	 * @param array  $font the font settings.
+	 * @param string $area the font use case.
+	 */
+	public function maybe_add_google_variant( $font, $area = null ) {
+		if ( empty( $font['variant'] ) ) {
+			return;
+		}
+		$maybe_add = false;
+		if ( ! empty( $area ) && 'headers' === $area ) {
+			$parent_font = kadence()->option( 'heading_font' );
+			if ( isset( $parent_font['family'] ) && 'inherit' === $parent_font['family'] ) {
+				$parent_font = kadence()->sub_option( 'base_font' );
+				if ( isset( $parent_font['google'] ) && true === $parent_font['google'] ) {
+					$maybe_add = true;
+				}
+			} elseif ( isset( $parent_font['google'] ) && true === $parent_font['google'] ) {
+				$maybe_add = true;
+			}
+		} else {
+			$parent_font = kadence()->sub_option( 'base_font' );
+			if ( isset( $parent_font['google'] ) && true === $parent_font['google'] ) {
+				$maybe_add = true;
+			}
+		}
+		if ( $maybe_add ) {
+			if ( ! in_array( $font['variant'], self::$google_fonts[ $parent_font['family'] ]['fontvariants'], true ) ) {
+				array_push( self::$google_fonts[ $parent_font['family'] ]['fontvariants'], $font['variant'] );
+			}
+		}
 	}
 	/**
 	 * Add google font to array.

@@ -1101,7 +1101,7 @@ $kadence_post_settings = array(
 		'live_method'     => array(
 			array(
 				'type'     => 'css_typography',
-				'selector' => '.site .entry-related h2.entry-related-title',
+				'selector' => '.wp-site-blocks .entry-related h2.entry-related-title',
 				'property' => 'font',
 				'key'      => 'typography',
 			),

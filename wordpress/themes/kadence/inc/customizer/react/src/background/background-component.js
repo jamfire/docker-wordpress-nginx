@@ -14,6 +14,7 @@ const {
 	Icon,
 	Tooltip,
 	TabPanel,
+	GradientPicker,
 	__experimentalGradientPicker,
 } = wp.components;
 // const {
@@ -121,7 +122,7 @@ class BackgroundComponent extends Component {
 			isVisible: false,
 			refresh: true,
 			modalCanClose: true,
-			supportGradient: ( undefined === __experimentalGradientPicker ? false : true ),
+			supportGradient: ( undefined === GradientPicker && undefined === __experimentalGradientPicker ? false : true ),
 		};
 	}
 	onColorChangeState( color, palette, device ) {

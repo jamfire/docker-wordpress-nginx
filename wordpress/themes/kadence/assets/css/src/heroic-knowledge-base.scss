@@ -1,5 +1,5 @@
 @import "_custom-properties.scss";
-.site .widget-area a.hkb_widget_exit__btn {
+.wp-site-blocks .widget-area a.hkb_widget_exit__btn {
     margin-top: 1em;
     border-radius: 3px;
     background: var(--global-palette-btn-bg);
@@ -45,20 +45,20 @@
 		opacity: 1;
 	}
 }
-.site #hkb .hkb-site-search .hkb-site-search__field {
+.wp-site-blocks #hkb .hkb-site-search .hkb-site-search__field {
     float: none;
     width: 100%;
     min-height: 0;
     padding: 0.5em 60px 0.5em 1em;
 }
-.site #hkb .hkb-site-search .hkb-site-search__button {
+.wp-site-blocks #hkb .hkb-site-search .hkb-site-search__button {
     width: 50px;
     top: 0;
     right: 0;
     bottom: 0;
     position: absolute;
 }
-.site #hkb .hkb-category {
+.wp-site-blocks #hkb .hkb-category {
     background: var(--global-palette9);
     box-shadow: 0px 15px 25px -10px rgba(0,0,0,0.05);
     border-radius: .25rem;
@@ -73,22 +73,22 @@
 .post-type-archive-ht_kb .entry .entry-content-wrap {
     padding: 0;
 }
-.site #hkb ul.hkb-article-list .hkb-article-list__format-standard:before, .site #hkb ul.hkb-article-list .hkb-article-list__format-video:before, .site #hkb .hkb-category .hkb-category__count, #hkb-jquery-live-search #hkb.hkb-searchresults > li.hkb-searchresults__article a:before {
+.wp-site-blocks #hkb ul.hkb-article-list .hkb-article-list__format-standard:before, .wp-site-blocks #hkb ul.hkb-article-list .hkb-article-list__format-video:before, .wp-site-blocks #hkb .hkb-category .hkb-category__count, #hkb-jquery-live-search #hkb.hkb-searchresults > li.hkb-searchresults__article a:before {
 	color:var(--global-palette5)
 }
-.site #hkb .hkb-meta li, #hkb-jquery-live-search #hkb .hkb-meta li {
+.wp-site-blocks #hkb .hkb-meta li, #hkb-jquery-live-search #hkb .hkb-meta li {
 	color:var(--global-palette4);
 	background: var(--global-palette7);
 }
-.site #hkb .hkb-meta .hkb-meta__usefulness, .site .ht-voting .ht-voting-links .ht-voting-upvote, #hkb-jquery-live-search #hkb .hkb-meta .hkb-meta__usefulness {
+.wp-site-blocks #hkb .hkb-meta .hkb-meta__usefulness, .wp-site-blocks .ht-voting .ht-voting-links .ht-voting-upvote, #hkb-jquery-live-search #hkb .hkb-meta .hkb-meta__usefulness {
 	color:var(--global-palette-btn);
 	background: var(--global-palette-btn-bg);
 }
-.site .ht-voting .ht-voting-links .ht-voting-downvote {
+.wp-site-blocks .ht-voting .ht-voting-links .ht-voting-downvote {
 	color:var(--global-palette4);
 	background: var(--global-palette7);
 }
-.site #hkb.hkb-template-category .hkb-article {
+.wp-site-blocks #hkb.hkb-template-category .hkb-article {
 	border-bottom-color: var(--global-gray-400);
 }
 #hkb-jquery-live-search #hkb.hkb-searchresults > li:hover, #hkb-jquery-live-search #hkb.hkb-searchresults > li.hkb-searchresults__current {
