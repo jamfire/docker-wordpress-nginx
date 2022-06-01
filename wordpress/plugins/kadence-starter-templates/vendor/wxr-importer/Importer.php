@@ -45,11 +45,6 @@ class Importer extends WXRImporter {
 	 * @return XMLReader|boolean Reader instance on success, false otherwise.
 	 */
 	protected function get_reader( $file ) {
-		// Avoid loading external entities for security
-		$old_value = null;
-		if ( function_exists( 'libxml_disable_entity_loader' ) ) {
-			// $old_value = libxml_disable_entity_loader( true );
-		}
 
 		if ( ! class_exists( 'XMLReader' ) ) {
 			$this->logger->critical( __( 'The XMLReader class is missing! Please install the XMLReader PHP extension on your server', 'wordpress-importer' ) );
@@ -59,10 +54,6 @@ class Importer extends WXRImporter {
 
 		$reader = new XMLReader();
 		$status = $reader->open( $file );
-
-		if ( ! is_null( $old_value ) ) {
-			// libxml_disable_entity_loader( $old_value );
-		}
 
 		if ( ! $status ) {
 			$this->logger->error( __( 'Could not open the XML file for parsing!', 'wordpress-importer' ) );

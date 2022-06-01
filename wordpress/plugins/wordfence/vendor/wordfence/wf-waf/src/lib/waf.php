@@ -435,7 +435,7 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 
 	protected function runMigrations() {
 		$currentVersion = $this->getStorageEngine()->getConfig('version');
-		if (!$currentVersion || version_compare($currentVersion, WFWAF_VERSION) === -1) {
+		if (wfWAFUtils::isVersionBelow(WFWAF_VERSION, $currentVersion)) {
 			if (!$currentVersion) {
 				$cron = array(
 					new wfWAFCronFetchRulesEvent(time() +
@@ -455,13 +455,13 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 				$this->getStorageEngine()->setConfig('cron', $cron, 'livewaf');
 			}
 			
-			if (version_compare($currentVersion, '1.0.2') === -1) {
+			if (wfWAFUtils::isVersionBelow('1.0.2', $currentVersion)) {
 				$event = new wfWAFCronFetchRulesEvent(time() - 2);
 				$event->setWaf($this);
 				$event->fire();
 			}
 			
-			if (version_compare($currentVersion, '1.0.3') === -1) {
+			if (wfWAFUtils::isVersionBelow('1.0.3', $currentVersion)) {
 				$this->getStorageEngine()->purgeIPBlocks();
 				
 				$cron = (array) $this->getStorageEngine()->getConfig('cron', null, 'livewaf');
@@ -475,7 +475,7 @@ auEa+7b+FGTKs7dUo2BNGR7OVifK4GZ8w/ajS0TelhrSRi3BBQCGXLzUO/UURUAh
 				$event->fire();
 			}
 			
-			if (version_compare($currentVersion, '1.0.4') === -1) {
+			if (wfWAFUtils::isVersionBelow('1.0.4', $currentVersion)) {
 				$movedKeys = array(
 					'whitelistedURLParams' => 'livewaf',
 					'cron' => 'livewaf',
@@ -1442,7 +1442,10 @@ HTML
 	}
 	
 	public function fileList() {
-		$fileList = array($this->getCompiledRulesFile());
+		$fileList = array();
+		$rulesFile = $this->getCompiledRulesFile();
+		if ($rulesFile !== null)
+			array_push($fileList, $rulesFile);
 		if (method_exists($this->getStorageEngine(), 'fileList')) {
 			$fileList = array_merge($fileList, $this->getStorageEngine()->fileList());
 		}

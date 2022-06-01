@@ -19,6 +19,7 @@ require_once WFWAF_LIB_PATH . 'waf.php';
 require_once WFWAF_LIB_PATH . 'utils.php';
 require_once WFWAF_LIB_PATH . 'i18n.php';
 require_once WFWAF_LIB_PATH . 'xmlrpc.php';
+require_once WFWAF_LIB_PATH . 'shutdown.php';
 
 require_once WFWAF_LIB_PATH . 'storage.php';
 require_once WFWAF_LIB_PATH . 'storage/file.php';

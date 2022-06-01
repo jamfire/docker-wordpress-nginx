@@ -1,11 +1,14 @@
 <?php
-require_once(dirname(__FILE__) . '/wordfenceClass.php');
-require_once(dirname(__FILE__) . '/wordfenceHash.php');
-require_once(dirname(__FILE__) . '/wfAPI.php');
-require_once(dirname(__FILE__) . '/wordfenceScanner.php');
-require_once(dirname(__FILE__) . '/wfIssues.php');
-require_once(dirname(__FILE__) . '/wfDB.php');
-require_once(dirname(__FILE__) . '/wfUtils.php');
+require_once(__DIR__ . '/wordfenceClass.php');
+require_once(__DIR__ . '/wordfenceHash.php');
+require_once(__DIR__ . '/wfAPI.php');
+require_once(__DIR__ . '/wordfenceScanner.php');
+require_once(__DIR__ . '/wfIssues.php');
+require_once(__DIR__ . '/wfDB.php');
+require_once(__DIR__ . '/wfUtils.php');
+require_once(__DIR__ . '/wfFileUtils.php');
+require_once(__DIR__ . '/wfScanPath.php');
+require_once(__DIR__ . '/wfScanFile.php');
 
 class wfScanEngine {
 	const SCAN_MANUALLY_KILLED = -999;
@@ -798,6 +801,7 @@ class wfScanEngine {
 					array(
 						'url'       => $test->getUrl(),
 						'file'      => $pathFromRoot,
+						'realFile'	=> $test->getPath(),
 						'canDelete' => true,
 					)
 				);
@@ -901,50 +905,64 @@ class wfScanEngine {
 	private function _scannedSkippedPaths() {
 		static $_cache = null;
 		if ($_cache === null) {
-			$base_abspath_relative = array('.htaccess', 'index.php', 'license.txt', 'readme.html', 'wp-activate.php', 'wp-admin', 'wp-app.php', 'wp-blog-header.php', 'wp-comments-post.php', 'wp-config-sample.php', 'wp-content', 'wp-cron.php', 'wp-includes', 'wp-links-opml.php', 'wp-load.php', 'wp-login.php', 'wp-mail.php', 'wp-pass.php', 'wp-register.php', 'wp-settings.php', 'wp-signup.php', 'wp-trackback.php', 'xmlrpc.php', '.well-known', 'cgi-bin');
-			$base_absolute = array();
-			if (defined('WP_CONTENT_DIR') && strlen(WP_CONTENT_DIR)) {
-				$base_absolute[] = WP_CONTENT_DIR;
+			$scanPaths = array(
+				new wfScanPath(
+					ABSPATH,
+					ABSPATH,
+					'/',
+					array('.htaccess', 'index.php', 'license.txt', 'readme.html', 'wp-activate.php', 'wp-admin', 'wp-app.php', 'wp-blog-header.php', 'wp-comments-post.php', 'wp-config-sample.php', 'wp-content', 'wp-cron.php', 'wp-includes', 'wp-links-opml.php', 'wp-load.php', 'wp-login.php', 'wp-mail.php', 'wp-pass.php', 'wp-register.php', 'wp-settings.php', 'wp-signup.php', 'wp-trackback.php', 'xmlrpc.php', '.well-known', 'cgi-bin')
+				)
+			);
+			$directoryConstants = array(
+				'WP_CONTENT_DIR' => '/wp-content',
+				'WP_PLUGIN_DIR' => '/wp-content/plugins',
+				'UPLOADS' => '/wp-content/uploads'
+			);
+			foreach ($directoryConstants as $constant => $wordpressPath) {
+				if (!defined($constant))
+					continue;
+				$path = constant($constant);
+				if (!empty($path)) {
+					if ($constant === 'UPLOADS')
+						$path = ABSPATH . $path;
+					$scanPaths[] = new wfScanPath(
+						ABSPATH,
+						$path,
+						$wordpressPath
+					);
+				}
 			}
-			if (defined('WP_PLUGIN_DIR') && strlen(WP_PLUGIN_DIR)) {
-				$base_absolute[] = WP_PLUGIN_DIR;
-			}
-			if (defined('UPLOADS') && strlen(UPLOADS)) {
-				$base_absolute[] = ABSPATH . UPLOADS; /* UPLOADS is relative to ABSPATH unlike the others */
-			}
-			$baseContents = scandir(ABSPATH);
-			if (!is_array($baseContents)) {
-				throw new Exception(__("Wordfence could not read the contents of your base WordPress directory. This usually indicates your permissions are so strict that your web server can't read your WordPress directory.", 'wordfence'));
-			}
-
 			$scanOutside = $this->scanController->scanOutsideWordPress();
-			if ($scanOutside) {
-				$_cache = array('scanned' => array_merge(array(ABSPATH), $base_absolute), 'skipped' => array());
-				return $_cache;
-			}
-
 			$scanned = array();
 			$skipped = array();
-			foreach ($baseContents as $file) { //Only include base files less than a meg that are files.
-				if ($file == '.' || $file == '..') {
-					continue;
-				}
-				$fullFile = rtrim(ABSPATH, '/') . '/' . $file;
-				if (!wfUtils::fileTooBig($fullFile)) { //Silently ignore files that are too large for the purposes of inclusion in the scan issue
-					if (in_array($file, $base_abspath_relative) || in_array($fullFile, $base_absolute) || (@is_file($fullFile) && @is_readable($fullFile))) {
-						$scanned[] = realpath($fullFile);
-					} else {
-						$skipped[] = $fullFile;
+			foreach ($scanPaths as $scanPath) {
+				if (!$scanOutside && $scanPath->hasExpectedFiles()) {
+					try {
+						foreach ($scanPath->getContents() as $fileName) {
+							$file = $scanPath->createScanFile($fileName);
+							if (wfUtils::fileTooBig($file->getRealPath()))
+								continue;
+							if ($scanPath->expectsFile($fileName) || wfFileUtils::isReadableFile($file->getRealPath())) {
+								$scanned[$file->getRealPath()] = $file;
+							}
+							else {
+								$skipped[$file->getRealPath()] = $file;
+							}
+						}
+					}
+					catch (Exception $e) {
+						throw new Exception(__("Wordfence could not read the content of your WordPress directory. This usually indicates your permissions are so strict that your web server can't read your WordPress directory.", 'wordfence'));
 					}
 				}
-			}
-			foreach ($base_absolute as $fullFile) {
-				$realFile = realpath($fullFile);
-				if ($realFile && !in_array($realFile, $scanned)) {
-					$scanned[] = $realFile;
+				else {
+					$file = $scanPath->createScanFile('/');
+					$scanned[$file->getRealPath()] = $file;
 				}
 			}
-			$_cache = array('scanned' => $scanned, 'skipped' => $skipped);
+			$_cache = array(
+				'scanned' => array_values($scanned),
+				'skipped' => array_values($skipped)
+			);
 		}
 		return $_cache;
 	}
@@ -957,11 +975,8 @@ class wfScanEngine {
 		$paths = $this->_scannedSkippedPaths();
 		if (!empty($paths['skipped'])) {
 			$skippedList = '';
-			foreach ($paths['skipped'] as $index => $fullPath) {
-				$path = esc_html($fullPath);
-				if (strpos($fullPath, ABSPATH) === 0) {
-					$path = '~/' . esc_html(substr($fullPath, strlen(ABSPATH)));
-				}
+			foreach ($paths['skipped'] as $index => $file) {
+				$path = esc_html($file->getDisplayPath());
 
 				if ($index >= 10) {
 					$skippedList .= sprintf(/* translators: Number of paths skipped in scan. */ __(', and %d more.', 'wordfence'), count($paths['skipped']) - 10);
@@ -1030,7 +1045,7 @@ class wfScanEngine {
 		$knownFilesThemes = $this->getThemes();
 		$this->status(2, 'info', sprintf(/* translators: Number of themes. */ _n("Found %d theme", "Found %d themes", sizeof($knownFilesThemes), 'wordfence'), sizeof($knownFilesThemes)));
 
-		$this->hasher = new wordfenceHash(strlen(ABSPATH), ABSPATH, $includeInKnownFilesScan, $knownFilesThemes, $knownFilesPlugins, $this, wfUtils::hex2bin($this->malwarePrefixesHash), $this->coreHashesHash, $this->scanMode);
+		$this->hasher = new wordfenceHash($includeInKnownFilesScan, $knownFilesThemes, $knownFilesPlugins, $this, wfUtils::hex2bin($this->malwarePrefixesHash), $this->coreHashesHash, $this->scanMode);
 	}
 
 	private function scan_knownFiles_main() {
@@ -1341,7 +1356,7 @@ class wfScanEngine {
 		$blogsToScan = self::getBlogsToScan('comments');
 		$wfdb = new wfDB();
 		foreach ($blogsToScan as $blog) {
-			$q1 = $wfdb->querySelect("select comment_ID from " . $blog['table'] . " where comment_approved=1");
+			$q1 = $wfdb->querySelect("select comment_ID from " . $blog['table'] . " where comment_approved=1 and not comment_type = 'order_note'");
 			foreach ($q1 as $idRow) {
 				$this->scanQueue .= pack('LL', $blog['blog_id'], $idRow['comment_ID']);
 			}

@@ -50,7 +50,7 @@ class Plugin {
     private static $instance;
 
     /**
-     * Plugin instanciation method
+     * Plugin instantiation method
      *
      * @return Plugin
      */
@@ -367,6 +367,10 @@ class Plugin {
             true
         );
 
+        if ( ! $this->get_redis_status() ) {
+            return;
+        }
+
         $min_time = $screen->id === $this->screen
             ? Metrics::max_time()
             : MINUTE_IN_SECONDS * 30;
@@ -605,16 +609,20 @@ class Plugin {
         }
 
         if ( $this->object_cache_dropin_exists() ) {
-            $url = $this->action_link( 'update-dropin' );
-
             if ( $this->validate_object_cache_dropin() ) {
                 if ( $this->object_cache_dropin_outdated() ) {
-                    // translators: %s = Action link to update the drop-in.
-                    $message = sprintf( __( 'The Redis object cache drop-in is outdated. Please <a href="%s">update the drop-in</a>.', 'redis-cache' ), $url );
+                    $message = sprintf(
+                        // translators: %s = Action link to update the drop-in.
+                        __( 'The Redis object cache drop-in is outdated. Please <a href="%s">update the drop-in</a>.', 'redis-cache' ),
+                        $this->action_link( 'update-dropin' )
+                    );
                 }
             } else {
-                // translators: %s = Action link to update the drop-in.
-                $message = sprintf( __( 'A foreign object cache drop-in was found. To use Redis for object caching, please <a href="%s">enable the drop-in</a>.', 'redis-cache' ), $url );
+                $message = sprintf(
+                    // translators: %s = Link to settings page.
+                    __( 'A foreign object cache drop-in was found. To use Redis for object caching, please <a href="%s">enable the drop-in</a>.', 'redis-cache' ),
+                    esc_url( network_admin_url( $this->page ) )
+                );
             }
 
             if ( isset( $message ) ) {
@@ -702,7 +710,7 @@ class Plugin {
                          * Fires on cache enable event
                          *
                          * @since 1.3.5
-                         * @param bool $result Whether the filesystem event (deletion of the `object-cache.php` file) was successfull.
+                         * @param bool $result Whether the filesystem event (deletion of the `object-cache.php` file) was successful.
                          */
                         do_action( 'redis_object_cache_disable', $result );
 
@@ -733,7 +741,7 @@ class Plugin {
                          * Fires on cache enable event
                          *
                          * @since 1.3.5
-                         * @param bool $result Whether the filesystem event (copy of the `object-cache.php` file) was successfull.
+                         * @param bool $result Whether the filesystem event (copy of the `object-cache.php` file) was successful.
                          */
                         do_action( 'redis_object_cache_update_dropin', $result );
 
@@ -940,7 +948,7 @@ class Plugin {
      * Initializes the WP filesystem API to be ready for use
      *
      * @param string $url    The URL to post the form to.
-     * @param bool   $silent Wheather to ask the user for credentials if necessary or not.
+     * @param bool   $silent Whether to ask the user for credentials if necessary or not.
      * @return bool
      */
     public function initialize_filesystem( $url, $silent = false ) {
@@ -1079,7 +1087,7 @@ class Plugin {
              * Fires on cache enable event
              *
              * @since 1.3.5
-             * @param bool $result Whether the filesystem event (copy of the `object-cache.php` file) was successfull.
+             * @param bool $result Whether the filesystem event (copy of the `object-cache.php` file) was successful.
              */
             do_action( 'redis_object_cache_update_dropin', $result );
         }

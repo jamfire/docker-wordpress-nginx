@@ -189,7 +189,7 @@ class Starter_Templates {
 			define( 'KADENCE_STARTER_TEMPLATES_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 		}
 		if ( ! defined( 'KADENCE_STARTER_TEMPLATES_VERSION' ) ) {
-			define( 'KADENCE_STARTER_TEMPLATES_VERSION', '1.2.12' );
+			define( 'KADENCE_STARTER_TEMPLATES_VERSION', '1.2.14' );
 		}
 	}
 
@@ -221,6 +221,9 @@ class Starter_Templates {
 	public function kadence_kadence_theme_after_import( $selected_import, $selected_palette, $selected_font ) {
 		if ( class_exists( 'woocommerce' ) && isset( $selected_import['ecommerce'] ) && $selected_import['ecommerce'] ) {
 			$this->import_demo_woocommerce();
+		}
+		if ( class_exists( 'Restrict_Content_Pro' ) && isset( $selected_import['plugins'] ) && is_array( $selected_import['plugins'] ) && in_array( 'restrict-content', $selected_import['plugins'] ) ) {
+			$this->import_demo_restrict_content();
 		}
 		if ( function_exists( 'tribe_update_option' ) ) {
 			tribe_update_option( 'toggle_blocks_editor', true );
@@ -504,6 +507,27 @@ class Starter_Templates {
 	/**
 	 * Kadence Import function.
 	 */
+	public function import_demo_restrict_content() {
+		$rcp_options = get_option( 'rcp_settings' );
+		$rcppages = array(
+			'registration_page'      => 'Register',
+			'redirect'      => 'Welcome',
+			'account_page'      => 'Your Membership',
+			'edit_profile'  => 'Edit Your Profile',
+			'update_card' => 'Update Billing Card',
+		);
+		foreach ( $rcppages as $rcp_page_name => $rcp_page_title ) {
+			$rcppage = get_page_by_title( $rcp_page_title );
+			if ( isset( $rcppage ) && $rcppage->ID ) {
+				$rcp_options[ $rcp_page_name ] = $rcppage->ID;
+			}
+		}
+
+		update_option( 'rcp_settings', $rcp_options );
+	}
+	/**
+	 * Kadence Import function.
+	 */
 	public function import_demo_woocommerce( $shop = 'Shop', $cart = 'Cart', $checkout = 'Checkout', $myaccount = 'My Account' ) {
 		$woopages = array(
 			'woocommerce_shop_page_id'      => $shop,
@@ -682,6 +706,16 @@ class Starter_Templates {
 			'event-tickets' => array(
 				'title' => 'Event Tickets',
 				'state' => Plugin_Check::active_check( 'event-tickets/event-tickets.php' ),
+				'src'   => 'repo',
+			),
+			'orderable' => array(
+				'title' => 'Orderable',
+				'state' => Plugin_Check::active_check( 'orderable/orderable.php' ),
+				'src'   => 'repo',
+			),
+			'restrict-content' => array(
+				'title' => 'Restrict Content',
+				'state' => Plugin_Check::active_check( 'restrict-content/restrictcontent.php' ),
 				'src'   => 'repo',
 			),
 		);
@@ -927,7 +961,9 @@ class Starter_Templates {
 				'subscribe_progress'   => esc_html__( 'Getting Started', 'kadence-starter-templates' ),
 				'plugin_progress'      => esc_html__( 'Checking/Installing/Activating Required Plugins', 'kadence-starter-templates' ),
 				'content_progress'     => esc_html__( 'Importing Content...', 'kadence-starter-templates' ),
-				'content_new_progress' => esc_html__( 'Importing Content... Still Importing.', 'kadence-starter-templates' ),
+				'content_new_progress' => esc_html__( 'Importing Content... Creating pages.', 'kadence-starter-templates' ),
+				'content_newer_progress' => esc_html__( 'Importing Content... Downloading images.', 'kadence-starter-templates' ),
+				'content_newest_progress' => esc_html__( 'Importing Content... Still Importing.', 'kadence-starter-templates' ),
 				'widgets_progress'     => esc_html__( 'Importing Widgets...', 'kadence-starter-templates' ),
 				'customizer_progress'  => esc_html__( 'Importing Customizer Settings...', 'kadence-starter-templates' ),
 				'user_email'           => $user_email,
@@ -1092,6 +1128,20 @@ class Starter_Templates {
 					'path'  => 'event-tickets/event-tickets.php',
 					'src'   => 'repo',
 				),
+				'orderable' => array(
+					'title' => 'Orderable',
+					'base'  => 'orderable',
+					'slug'  => 'orderable',
+					'path'  => 'orderable/orderable.php',
+					'src'   => 'repo',
+				),
+				'restrict-content' => array(
+					'title' => 'Restrict Content',
+					'base'  => 'restrict-content',
+					'slug'  => 'restrictcontent',
+					'path'  => 'restrict-content/restrictcontent.php',
+					'src'   => 'repo',
+				),
 			);
 			$plugin_information = array();
 			foreach( $info['plugins'] as $plugin ) {
@@ -1168,8 +1218,8 @@ class Starter_Templates {
 	public function install_plugins_ajax_callback() {
 		Helpers::verify_ajax_call();
 
-		if ( ! current_user_can( 'install_plugins' ) || ! isset( $_POST['selected'] ) || ! isset( $_POST['builder'] ) ) {
-			wp_send_json_error( 'Permissions Issue' );
+		if ( ! isset( $_POST['selected'] ) || ! isset( $_POST['builder'] ) ) {
+			wp_send_json_error( 'Missing Information' );
 		}
 		// Get selected file index or set it to 0.
 		$selected_index   = empty( $_POST['selected'] ) ? '' : sanitize_text_field( $_POST['selected'] );
@@ -1307,6 +1357,20 @@ class Starter_Templates {
 					'path'  => 'event-tickets/event-tickets.php',
 					'src'   => 'repo',
 				),
+				'orderable' => array(
+					'title' => 'Orderable',
+					'base'  => 'orderable',
+					'slug'  => 'orderable',
+					'path'  => 'orderable/orderable.php',
+					'src'   => 'repo',
+				),
+				'restrict-content' => array(
+					'title' => 'Restrict Content',
+					'base'  => 'restrict-content',
+					'slug'  => 'restrictcontent',
+					'path'  => 'restrict-content/restrictcontent.php',
+					'src'   => 'repo',
+				),
 			);
 			foreach( $info['plugins'] as $plugin ) {
 				$path = false;
@@ -1355,6 +1419,9 @@ class Starter_Templates {
 						}
 					}
 					if ( 'notactive' === $state && 'repo' === $src ) {
+						if ( ! current_user_can( 'install_plugins' ) ) {
+							wp_send_json_error( 'Permissions Issue' );
+						}
 						$api = plugins_api(
 							'plugin_information',
 							array(
@@ -1387,6 +1454,9 @@ class Starter_Templates {
 								if ( 'give' === $base ) {
 									add_option( 'give_install_pages_created', 1, '', false );
 								}
+								if ( 'restrict-content' === $base ) {
+									update_option( 'rcp_install_pages_created', current_time( 'mysql' ) );
+								}
 								$activate = activate_plugin( $path, '', false, $silent );
 								if ( is_wp_error( $activate ) ) {
 									$install = false;
@@ -1398,11 +1468,17 @@ class Starter_Templates {
 							$install = false;
 						}
 					} elseif ( 'installed' === $state ) {
+						if ( ! current_user_can( 'install_plugins' ) ) {
+							wp_send_json_error( 'Permissions Issue' );
+						}
 						//$silent = false; 
 						$silent = ( 'give' === $base || 'elementor' === $base ? false : true );
 						if ( 'give' === $base ) {
 							// Make sure give doesn't add it's pages, prevents having two sets.
 							update_option( 'give_install_pages_created', 1, '', false );
+						}
+						if ( 'restrict-content' === $base ) {
+							update_option( 'rcp_install_pages_created', current_time( 'mysql' ) );
 						}
 						$activate = activate_plugin( $path, '', false, $silent );
 						if ( is_wp_error( $activate ) ) {
@@ -1437,6 +1513,7 @@ class Starter_Templates {
 	public function subscribe_ajax_callback() {
 		Helpers::verify_ajax_call();
 		$email = empty( $_POST['email'] ) ? '' : sanitize_text_field( $_POST['email'] );
+		$selected_index = empty( $_POST['selected'] ) ? '' : sanitize_text_field( $_POST['selected'] );
 		// Do you have the data?
 		if ( $email && is_email( $email ) && filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
 			list( $user, $domain ) = explode( '@', $email );
@@ -1450,9 +1527,10 @@ class Starter_Templates {
 				return wp_send_json( 'emailDomainPostError' );
 			}
 			$args = array(
-				'email'  => $email,
-				'tag'    => 'wire',
-				'list'   => '20',
+				'email'   => $email,
+				'tag'     => 'starter',
+				'list'    => '20',
+				'starter' => $selected_index,
 			);
 			// Get the response.
 			$api_url  = add_query_arg( $args, 'https://www.kadencewp.com/kadence-blocks/wp-json/kadence-subscribe/v1/subscribe/' );

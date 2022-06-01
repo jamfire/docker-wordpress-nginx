@@ -184,6 +184,40 @@ class wfWAFUtils {
 		return is_array($data) ? array_map('wfWAFUtils::_json_decode_object_helper', $data) : $data;
 	}
 
+	public static function json_encode_limited($data, $limit, $truncatable) {
+		$json = self::json_encode($data);
+		$size = strlen($json);
+		if ($size > $limit) {
+			$json = null;
+			$minimalData = $data;
+			foreach ($minimalData as $key => &$value) {
+				if (in_array($key, $truncatable)) {
+					$value = '';
+				}
+			}
+			$minimumSize = strlen(self::json_encode($minimalData));
+			if ($minimumSize <= $limit) {
+				$excess = $size - $limit;
+				foreach ($truncatable as $field) {
+					if (!array_key_exists($field, $data))
+						continue;
+					$value = $data[$field];
+					if (is_string($value)) {
+						$originalLength = strlen($value);
+						$truncatedLength = max(0, $originalLength - $excess);
+						$excess -= ($originalLength - $truncatedLength);
+						$data[$field] = substr($value, 0, $truncatedLength);
+					}
+					if ($excess === 0) {
+						$json = self::json_encode($data);
+						break;
+					}
+				}
+			}
+		}
+		return $json;
+	}
+
 	/**
 	 * Compare two strings in constant time. It can leak the length of a string.
 	 *
@@ -1101,7 +1135,7 @@ class wfWAFUtils {
 						!is_array($endParenToken) && $endParenToken === ')'
 					) {
 						if (token_name($constantValueToken[0]) === 'T_STRING') {
-							$value = constant($constantValueToken[1]);
+							$value = defined($constantValueToken[1]) ? constant($constantValueToken[1]) : null;
 						}
 						else {
 							$value = self::substr($constantValueToken[1], 1, -1);
@@ -1191,5 +1225,10 @@ class wfWAFUtils {
 		}
 		return true;
 	}
+
+	public static function isVersionBelow($target, $compared) {
+		return $compared === null || version_compare($compared, $target, '<');
+	}
+
 }
 }

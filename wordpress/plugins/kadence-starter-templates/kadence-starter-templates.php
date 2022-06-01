@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Kadence Starter Templates
  * Description: Choose the prebuilt website and click to import.
- * Version: 1.2.12
+ * Version: 1.2.14
  * Author: Kadence WP
  * Author URI: https://kadencewp.com/
  * License: GPLv2 or later

@@ -350,6 +350,7 @@ class wordfenceScanner {
 								'longMsg' => __('This file appears to be an old version of the TimThumb script which makes your system vulnerable to attackers. Please upgrade the theme or plugin that uses this or remove it.', 'wordfence') . $extraMsg,
 								'data' => array_merge(array(
 									'file' => $file,
+									'realFile' => $record->realPath,
 									'shac' => $record->SHAC,
 									'highSense' => $options['scansEnabled_highSense'],
 									'betaSigs' => wfConfig::get('betaThreatDefenseFeed'),
@@ -417,6 +418,7 @@ class wordfenceScanner {
 											'longMsg' => $customMessage . ' ' . sprintf(__('The matched text in this file is: %s', 'wordfence'), '<strong style="color: #F00;" class="wf-split-word">' . wfUtils::potentialBinaryStringToHTML((wfUtils::strlen($matchString) > 200 ? wfUtils::substr($matchString, 0, 200) . '...' : $matchString)) . '</strong>') . ' ' . '<br><br>' . sprintf(/* translators: Scan result type. */ __('The issue type is: %s', 'wordfence'), '<strong>' . esc_html($rule[7]) . '</strong>') . '<br>' . sprintf(/* translators: Scan result description. */ __('Description: %s', 'wordfence'), '<strong>' . esc_html($rule[3]) . '</strong>') . $extraMsg,
 											'data' => array_merge(array(
 												'file' => $file,
+												'realFile' => $record->realPath,
 												'shac' => $record->SHAC,
 												'highSense' => $options['scansEnabled_highSense'],
 												'betaSigs' => wfConfig::get('betaThreatDefenseFeed'),
@@ -458,6 +460,7 @@ class wordfenceScanner {
 									'longMsg' => sprintf(/* translators: Malware signature matched text. */ __('This file is a PHP executable file and contains the word "eval" (without quotes) and the word "%s" (without quotes). The eval() function along with an encoding function like the one mentioned are commonly used by hackers to hide their code. If you know about this file you can choose to ignore it to exclude it from future scans. This file was detected because you have enabled HIGH SENSITIVITY scanning. This option is more aggressive than the usual scans, and may cause false positives.', 'wordfence'), '<span class="wf-split-word">' . esc_html($badStringFound) . '</span>'),
  									'data' => array_merge(array(
 										'file' => $file,
+										'realFile' => $record->realPath,
 										'shac' => $record->SHAC,
 										'highSense' => $options['scansEnabled_highSense'],
 										'betaSigs' => wfConfig::get('betaThreatDefenseFeed'),
@@ -727,6 +730,7 @@ class wordfenceScanner {
  */
 class wordfenceMalwareScanFile {
 	protected $_filename;
+	protected $_realPath;
 	protected $_filenameMD5;
 	protected $_newMD5;
 	protected $_shac;
@@ -749,22 +753,23 @@ class wordfenceMalwareScanFile {
 	
 	public static function files($limit = 500) {
 		$db = self::getDB();
-		$result = $db->querySelect("SELECT filename, filenameMD5, HEX(newMD5) AS newMD5, HEX(SHAC) AS SHAC, stoppedOnSignature, stoppedOnPosition, isSafeFile FROM " . wfDB::networkTable('wfFileMods') . " WHERE oldMD5 != newMD5 AND knownFile = 0 limit %d", $limit);
+		$result = $db->querySelect("SELECT filename, real_path, filenameMD5, HEX(newMD5) AS newMD5, HEX(SHAC) AS SHAC, stoppedOnSignature, stoppedOnPosition, isSafeFile FROM " . wfDB::networkTable('wfFileMods') . " WHERE oldMD5 != newMD5 AND knownFile = 0 limit %d", $limit);
 		$files = array();
 		foreach ($result as $row) {
-			$files[] = new wordfenceMalwareScanFile($row['filename'], $row['filenameMD5'], $row['newMD5'], $row['SHAC'], $row['stoppedOnSignature'], $row['stoppedOnPosition'], $row['isSafeFile']);
+			$files[] = new wordfenceMalwareScanFile($row['filename'], $row['real_path'], $row['filenameMD5'], $row['newMD5'], $row['SHAC'], $row['stoppedOnSignature'], $row['stoppedOnPosition'], $row['isSafeFile']);
 		}
 		return $files;
 	}
 	
 	public static function fileForPath($file) {
 		$db = self::getDB();
-		$row = $db->querySingleRec("SELECT filename, filenameMD5, HEX(newMD5) AS newMD5, HEX(SHAC) AS SHAC, stoppedOnSignature, stoppedOnPosition, isSafeFile FROM " . wfDB::networkTable('wfFileMods') . " WHERE filename = '%s'", $file);
-		return new wordfenceMalwareScanFile($row['filename'], $row['filenameMD5'], $row['newMD5'], $row['SHAC'], $row['stoppedOnSignature'], $row['stoppedOnPosition'], $row['isSafeFile']);
+		$row = $db->querySingleRec("SELECT filename, real_path, filenameMD5, HEX(newMD5) AS newMD5, HEX(SHAC) AS SHAC, stoppedOnSignature, stoppedOnPosition, isSafeFile FROM " . wfDB::networkTable('wfFileMods') . " WHERE filename = '%s'", $file);
+		return new wordfenceMalwareScanFile($row['filename'], $row['real_path'], $row['filenameMD5'], $row['newMD5'], $row['SHAC'], $row['stoppedOnSignature'], $row['stoppedOnPosition'], $row['isSafeFile']);
 	}
 	
-	public function __construct($filename, $filenameMD5, $newMD5, $shac, $stoppedOnSignature, $stoppedOnPosition, $isSafeFile) {
+	public function __construct($filename, $realPath, $filenameMD5, $newMD5, $shac, $stoppedOnSignature, $stoppedOnPosition, $isSafeFile) {
 		$this->_filename = $filename;
+		$this->_realPath = $realPath;
 		$this->_filenameMD5 = $filenameMD5;
 		$this->_newMD5 = $newMD5;
 		$this->_shac = strtoupper($shac);
@@ -777,6 +782,8 @@ class wordfenceMalwareScanFile {
 		switch ($key) {
 			case 'filename':
 				return $this->_filename;
+			case 'realPath':
+				return $this->_realPath;
 			case 'filenameMD5':
 				return $this->_filenameMD5;
 			case 'newMD5':
@@ -793,7 +800,7 @@ class wordfenceMalwareScanFile {
 	}
 	
 	public function __toString() {
-		return "Record [filename: {$this->filename}, filenameMD5: {$this->filenameMD5}, newMD5: {$this->newMD5}, stoppedOnSignature: {$this->stoppedOnSignature}, stoppedOnPosition: {$this->stoppedOnPosition}]";
+		return "Record [filename: {$this->filename}, realPath: {$this->realPath}, filenameMD5: {$this->filenameMD5}, newMD5: {$this->newMD5}, stoppedOnSignature: {$this->stoppedOnSignature}, stoppedOnPosition: {$this->stoppedOnPosition}]";
 	}
 	
 	public function markComplete() {

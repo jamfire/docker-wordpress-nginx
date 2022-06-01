@@ -1021,6 +1021,8 @@ class wfUserIPRange {
 	}
 
 	protected function _sanitizeIPRange($ip_string) {
+		if (!is_string($ip_string))
+			return null;
 		$ip_string = preg_replace('/\s/', '', $ip_string); //Strip whitespace
 		$ip_string = preg_replace('/[\\x{2013}-\\x{2015}]/u', '-', $ip_string); //Non-hyphen dashes to hyphen
 		$ip_string = strtolower($ip_string);
@@ -1282,6 +1284,9 @@ class wfRequestModel extends wfModel {
 					$actionData[$key] = base64_decode($actionData[$key]);
 				}
 			}
+		}
+		else {
+			$actionData = array();
 		}
 		return $actionData;
 	}

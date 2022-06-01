@@ -3,7 +3,7 @@
  * Plugin Name: Redis Object Cache Drop-In
  * Plugin URI: http://wordpress.org/plugins/redis-cache/
  * Description: A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, Credis, HHVM, replication, clustering and WP-CLI.
- * Version: 2.0.22
+ * Version: 2.0.26
  * Author: Till Krüss
  * Author URI: https://objectcache.pro
  * License: GPLv3
@@ -34,6 +34,22 @@ function wp_cache_add( $key, $value, $group = '', $expiration = 0 ) {
     global $wp_object_cache;
 
     return $wp_object_cache->add( $key, $value, $group, $expiration );
+}
+
+/**
+ * Adds multiple values to the cache in one call.
+ *
+ * @param array  $data   Array of keys and values to be set.
+ * @param string $group  Optional. Where the cache contents are grouped. Default empty.
+ * @param int    $expire Optional. When to expire the cache contents, in seconds.
+ *                       Default 0 (no expiration).
+ * @return bool[] Array of return values, grouped by key. Each value is either
+ *                true on success, or false if cache key and group already exist.
+ */
+function wp_cache_add_multiple( array $data, $group = '', $expire = 0 ) {
+    global $wp_object_cache;
+
+    return $wp_object_cache->add_multiple( $data, $group, $expire );
 }
 
 /**
@@ -81,6 +97,20 @@ function wp_cache_delete( $key, $group = '', $time = 0 ) {
 }
 
 /**
+ * Deletes multiple values from the cache in one call.
+ *
+ * @param array  $keys  Array of keys under which the cache to deleted.
+ * @param string $group Optional. Where the cache contents are grouped. Default empty.
+ * @return bool[] Array of return values, grouped by key. Each value is either
+ *                true on success, or false if the contents were not deleted.
+ */
+function wp_cache_delete_multiple( array $keys, $group = '' ) {
+    global $wp_object_cache;
+
+    return $wp_object_cache->delete_multiple( $keys, $group );
+}
+
+/**
  * Invalidate all items in the cache. If `WP_REDIS_SELECTIVE_FLUSH` is `true`,
  * only keys prefixed with the `WP_REDIS_PREFIX` are flushed.
  *
@@ -92,6 +122,17 @@ function wp_cache_flush( $delay = 0 ) {
     global $wp_object_cache;
 
     return $wp_object_cache->flush( $delay );
+}
+
+/**
+ * Removes all cache items from the in-memory runtime cache.
+ *
+ * @return bool True on success, false on failure.
+ */
+function wp_cache_flush_runtime() {
+    global $wp_object_cache;
+
+    return $wp_object_cache->flush_runtime();
 }
 
 /**
@@ -214,6 +255,22 @@ function wp_cache_set( $key, $value, $group = '', $expiration = 0 ) {
     global $wp_object_cache;
 
     return $wp_object_cache->set( $key, $value, $group, $expiration );
+}
+
+/**
+ * Sets multiple values to the cache in one call.
+ *
+ * @param array  $data   Array of keys and values to be set.
+ * @param string $group  Optional. Where the cache contents are grouped. Default empty.
+ * @param int    $expire Optional. When to expire the cache contents, in seconds.
+ *                       Default 0 (no expiration).
+ * @return bool[] Array of return values, grouped by key. Each value is either
+ *                true on success, or false on failure.
+ */
+function wp_cache_set_multiple( array $data, $group = '', $expire = 0 ) {
+    global $wp_object_cache;
+
+    return $wp_object_cache->set_multiple( $data, $group, $expire );
 }
 
 /**
@@ -484,6 +541,9 @@ class WP_Object_Cache {
                 case 'phpredis':
                     $this->connect_using_phpredis( $parameters );
                     break;
+                case 'relay':
+                    $this->connect_using_relay( $parameters );
+                    break;
                 case 'credis':
                     $this->connect_using_credis( $parameters );
                     break;
@@ -581,7 +641,7 @@ class WP_Object_Cache {
     }
 
     /**
-     * Connect to Redis using the PhpRedis (PECL) extention.
+     * Connect to Redis using the PhpRedis (PECL) extension.
      *
      * @param  array $parameters Connection parameters built by the `build_parameters` method.
      * @return void
@@ -617,7 +677,7 @@ class WP_Object_Cache {
                 'port' => $parameters['port'],
                 'timeout' => $parameters['timeout'],
                 '',
-                'retry_interval' => $parameters['retry_interval'],
+                'retry_interval' => (int) $parameters['retry_interval'],
             ];
 
             if ( strcasecmp( 'tls', $parameters['scheme'] ) === 0 ) {
@@ -661,6 +721,74 @@ class WP_Object_Cache {
 
         if ( defined( 'WP_REDIS_SERIALIZER' ) && ! empty( WP_REDIS_SERIALIZER ) ) {
             $this->redis->setOption( Redis::OPT_SERIALIZER, WP_REDIS_SERIALIZER );
+        }
+    }
+
+    /**
+     * Connect to Redis using the Relay extension.
+     *
+     * @param  array $parameters Connection parameters built by the `build_parameters` method.
+     * @return void
+     */
+    protected function connect_using_relay( $parameters ) {
+        $version = phpversion( 'relay' );
+
+        $this->diagnostics[ 'client' ] = sprintf( 'Relay (v%s)', $version );
+
+        if ( defined( 'WP_REDIS_SHARDS' ) ) {
+            throw new Exception('Relay does not support sharding.');
+        } elseif ( defined( 'WP_REDIS_CLUSTER' ) ) {
+            throw new Exception('Relay does not cluster connections.');
+        } else {
+            $this->redis = new Relay\Relay;
+
+            $args = [
+                'host' => $parameters['host'],
+                'port' => $parameters['port'],
+                'timeout' => $parameters['timeout'],
+                '',
+                'retry_interval' => (int) $parameters['retry_interval'],
+            ];
+
+            if ( strcasecmp( 'tls', $parameters['scheme'] ) === 0 ) {
+                $args['host'] = sprintf(
+                    '%s://%s',
+                    $parameters['scheme'],
+                    str_replace( 'tls://', '', $parameters['host'] )
+                );
+            }
+
+            if ( strcasecmp( 'unix', $parameters['scheme'] ) === 0 ) {
+                $args['host'] = $parameters['path'];
+                $args['port'] = null;
+            }
+
+            $args['read_timeout'] = $parameters['read_timeout'];
+
+            call_user_func_array( [ $this->redis, 'connect' ], array_values( $args ) );
+
+            if ( isset( $parameters['password'] ) ) {
+                $args['password'] = $parameters['password'];
+                $this->redis->auth( $parameters['password'] );
+            }
+
+            if ( isset( $parameters['database'] ) ) {
+                if ( ctype_digit( (string) $parameters['database'] ) ) {
+                    $parameters['database'] = (int) $parameters['database'];
+                }
+
+                $args['database'] = $parameters['database'];
+
+                if ( $parameters['database'] ) {
+                    $this->redis->select( $parameters['database'] );
+                }
+            }
+
+            $this->diagnostics += $args;
+        }
+
+        if ( defined( 'WP_REDIS_SERIALIZER' ) && ! empty( WP_REDIS_SERIALIZER ) ) {
+            $this->redis->setOption( Relay\Relay::OPT_SERIALIZER, WP_REDIS_SERIALIZER );
         }
     }
 
@@ -873,7 +1001,7 @@ class WP_Object_Cache {
     }
 
     /**
-     * Connect to Redis using HHVM's Redis extention.
+     * Connect to Redis using HHVM's Redis extension.
      *
      * @param  array $parameters Connection parameters built by the `build_parameters` method.
      * @return void
@@ -987,6 +1115,30 @@ class WP_Object_Cache {
      */
     public function add( $key, $value, $group = 'default', $expiration = 0 ) {
         return $this->add_or_replace( true, $key, $value, $group, $expiration );
+    }
+
+    /**
+     * Adds multiple values to the cache in one call.
+     *
+     * @param array  $data   Array of keys and values to be added.
+     * @param string $group  Optional. Where the cache contents are grouped.
+     * @param int    $expire Optional. When to expire the cache contents, in seconds.
+     *                       Default 0 (no expiration).
+     * @return bool[] Array of return values, grouped by key. Each value is either
+     *                true on success, or false if cache key and group already exist.
+     */
+    public function add_multiple( array $data, $group = 'default', $expire = 0 ) {
+        if ( function_exists( 'wp_suspend_cache_addition' ) && wp_suspend_cache_addition() ) {
+            return array_combine( array_keys( $data ), array_fill( 0, count( $data ), false ) );
+        }
+
+        $values = [];
+
+        foreach ( $data as $key => $value ) {
+            $values[ $key ] = $this->add( $key, $value, $group, $expire );
+        }
+
+        return $values;
     }
 
     /**
@@ -1169,6 +1321,87 @@ class WP_Object_Cache {
         }
 
         return (bool) $result;
+    }
+
+    /**
+     * Deletes multiple values from the cache in one call.
+     *
+     * @param array  $keys  Array of keys to be deleted.
+     * @param string $group Optional. Where the cache contents are grouped.
+     * @return bool[] Array of return values, grouped by key. Each value is either
+     *                true on success, or false if the contents were not deleted.
+     */
+    public function delete_multiple( array $keys, $group = 'default' ) {
+        if ( $this->redis_status() && method_exists( $this->redis, 'pipeline' ) ) {
+            return $this->delete_multiple_at_once( $keys, $group );
+        }
+
+        $values = [];
+
+        foreach ( $keys as $key ) {
+            $values[ $key ] = $this->delete( $key, $group );
+        }
+
+        return $values;
+    }
+
+    /**
+     * Deletes multiple values from the cache in one call.
+     *
+     * @param array  $keys  Array of keys to be deleted.
+     * @param string $group Optional. Where the cache contents are grouped.
+     * @return bool[] Array of return values, grouped by key. Each value is either
+     *                true on success, or false if the contents were not deleted.
+     */
+    protected function delete_multiple_at_once( array $keys, $group = 'default' ) {
+        if ( $this->is_ignored_group( $group ) ) {
+            $results = [];
+
+            foreach ( $keys as $key ) {
+                $derived_key = $this->build_key( $key, $group );
+
+                $results[ $key ] = isset( $this->cache[ $derived_key ] );
+
+                unset( $this->cache[ $derived_key ] );
+            }
+
+            return $results;
+        }
+
+        try {
+            $tx = $this->redis->pipeline();
+
+            foreach ($keys as $key) {
+                $derived_key = $this->build_key( (string) $key, $group );
+
+                $tx->del( $derived_key );
+
+                unset( $this->cache[ $derived_key ] );
+            }
+
+            $method = ( $this->redis instanceof Predis\Client ) ? 'execute' : 'exec';
+
+            $results = array_map( function ( $response ) {
+                return (bool) $this->parse_redis_response( $response );
+            }, $tx->{$method}() );
+
+            return array_combine( $keys, $results );
+        } catch ( Exception $exception ) {
+            $this->handle_exception( $exception );
+
+            return array_combine( $keys, array_fill( 0, count( $keys ), false ) );
+        }
+    }
+
+    /**
+     * Removes all cache items from the in-memory runtime cache.
+     *
+     * @return bool True on success, false on failure.
+     */
+    public function flush_runtime() {
+        $this->cache = [];
+
+        return true;
     }
 
     /**
@@ -1807,6 +2040,25 @@ LUA;
     }
 
     /**
+     * Sets multiple values to the cache in one call.
+     *
+     * @param array  $data   Array of key and value to be set.
+     * @param string $group  Optional. Where the cache contents are grouped.
+     * @param int    $expire Optional. When to expire the cache contents, in seconds.
+     *                       Default 0 (no expiration).
+     * @return bool[] Array of return values, grouped by key. Each value is always true.
+     */
+    public function set_multiple( array $data, $group = 'default', $expiration = 0 ) {
+        $values = [];
+
+        foreach ( $data as $key => $value ) {
+            $values[ $key ] = $this->set( $key, $value, $group, $expiration );
+        }
+
+        return $values;
+    }
+
+    /**
      * Increment a Redis counter by the amount specified
      *
      * @param  string $key    The key name.
@@ -1974,7 +2226,7 @@ LUA;
         <?php echo (int) $this->cache_misses; ?>
         <br />
         <strong>Cache Size:</strong>
-        <?php echo number_format( strlen( serialize( $this->cache ) ) / 1024, 2 ); ?> kB
+        <?php echo number_format( strlen( serialize( $this->cache ) ) / 1024, 2 ); ?> KB
     </p>
         <?php
     }

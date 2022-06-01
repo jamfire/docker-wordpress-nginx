@@ -33,11 +33,13 @@ import KadenceSubscribeForm from './subscribe-form'
  */
 const { __, sprintf } = wp.i18n;
 const { Fragment, Component, render, PureComponent } = wp.element;
-const { Modal, Spinner, ButtonGroup, Dropdown, Icon, Button, ExternalLink, ToolbarGroup, CheckboxControl, TextControl, ToggleControl, MenuItem, Tooltip, PanelBody } = wp.components;
+const { Modal, Spinner, ButtonGroup, SelectControl, DropdownMenu, Dropdown, Icon, Button, ExternalLink, ToolbarGroup, CheckboxControl, TextControl, ToggleControl, MenuItem, Tooltip, PanelBody } = wp.components;
 import {
 	arrowLeft,
 	download,
+	heading,
 	update,
+	tag,
 	chevronLeft,
 	chevronDown,
 } from '@wordpress/icons';
@@ -159,6 +161,7 @@ class KadenceImporter extends Component {
 		this.saveConfig = this.saveConfig.bind( this );
 		this.state = {
 			category: 'all',
+			level: 'all',
 			activeTemplate: '',
 			colorPalette: '',
 			fontPair: '',
@@ -370,12 +373,13 @@ class KadenceImporter extends Component {
 		data.append( 'page_id', page_id );
 		this.runPageAjax( data );
 	}
-	runSubscribeSingle( email ) {
+	runSubscribeSingle( email, selected ) {
 		this.setState( { progress: 'subscribe', isFetching: true, showForm: false } );
 		var data = new FormData();
 		data.append( 'action', 'kadence_import_subscribe' );
 		data.append( 'security', kadenceStarterParams.ajax_nonce );
 		data.append( 'email', email );
+		data.append( 'selected', selected );
 		this.runPageAjax( data );
 	}
 	runRemovePast( selected, builder ) {
@@ -396,12 +400,13 @@ class KadenceImporter extends Component {
 		data.append( 'builder', builder );
 		this.runAjax( data );
 	}
-	runSubscribe( email ) {
+	runSubscribe( email, selected ) {
 		this.setState( { progress: 'subscribe', isFetching: true, showForm: false } );
 		var data = new FormData();
 		data.append( 'action', 'kadence_import_subscribe' );
 		data.append( 'security', kadenceStarterParams.ajax_nonce );
 		data.append( 'email', email );
+		data.append( 'selected', selected );
 		this.runAjax( data );
 	}
 	runPageAjax( data ) {
@@ -465,7 +470,13 @@ class KadenceImporter extends Component {
 		})
 		.done( function( response, status, stately ) {
 			if ( 'undefined' !== typeof response.status && 'newAJAX' === response.status ) {
-				control.state.progress = 'contentNew';
+				if ( control.state.progress === 'contentNew' ) {
+					control.state.progress = 'contentNewer';
+				} else if ( control.state.progress === 'contentNewer' ) {
+					control.state.progress = 'contentNewest';
+				} else {
+					control.state.progress = 'contentNew';
+				}
 				control.runAjax( data );
 			} else if ( 'undefined' !== typeof response.status && 'customizerAJAX' === response.status ) {
 				var newData = new FormData();
@@ -531,6 +542,8 @@ class KadenceImporter extends Component {
 			} else if ( 'undefined' !== typeof response.success && ! response.success ) {
 				//jQuery( '.kadence_starter_templates_finished' ).append( '<p>' + response.message + '</p>' );
 				control.setState( { finished: true, hasContent:true, hasPastContent:true, isFetching: false, colorPalette: '', fontPair: '', focusMode: false, isImporting: false, isSelected:false, isPageSelected:false, progress: '', showForm: true, response: '<div class="notice kadence_starter_templates_response notice-error"><p>' + __( 'Failed Import. Something went wrong internally. Please try again.', 'kadence-starter-templates' ) + '</p></div>'  } );
+			} else if ( response === 'emailDomainPostError' || response === 'emailDomainPreError' ) {
+				control.setState( { isFetching: false, progress: '', showForm: true, emailError: true } );
 			} else {
 				console.log( response );
 				//jQuery( '.kadence_starter_templates_error' ).append( '<div class="notice kadence_starter_templates_response notice-error"><p>' + response + '</p></div>' );
@@ -544,17 +557,6 @@ class KadenceImporter extends Component {
 		});
 	}
 	render() {
-		const cats = [ 'all' ];
-		for ( let i = 0; i < this.state.templates.length; i++ ) {
-			for ( let c = 0; c < this.state.templates[ i ].categories.length; c++ ) {
-				if ( ! cats.includes( this.state.templates[ i ].categories[ c ] ) ) {
-					cats.push( this.state.templates[ i ].categories[ c ] );
-				}
-			}
-		}
-		const catOptions = cats.map( ( item ) => {
-			return { value: item, label: this.capitalizeFirstLetter( item ) }
-		} );
 		let builderTypeName = __( 'Gutenberg', 'kadence-starter-templates' );
 		let builderTypeIcon = gbIcon;
 		if ( this.state.starterSettings['builderType'] === 'elementor' ) {
@@ -756,24 +758,27 @@ class KadenceImporter extends Component {
 								) }
 							</PanelBody>
 							{ this.state.progress === 'subscribe' && (
-								<div class="kadence_starter_templates_response">{ kadenceStarterParams.subscribe_progress }</div>
+								<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.subscribe_progress }</div>
 							) }
 							{ this.state.progress === 'plugins' && (
-								<div class="kadence_starter_templates_response">{ kadenceStarterParams.plugin_progress }</div>
+								<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.plugin_progress }</div>
 							) }
 							{ this.state.progress === 'content' && (
-								<div class="kadence_starter_templates_response">{ kadenceStarterParams.content_progress }</div>
+								<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_progress }</div>
 							) }
 							{ this.state.progress === 'contentNew' && (
-								<div class="kadence_starter_templates_response">{ kadenceStarterParams.content_new_progress }</div>
+								<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_new_progress }</div>
 							) }
-							{ this.state.isFetching && (
-								<Spinner />
+							{ this.state.progress === 'contentNewer' && (
+								<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_newer_progress }</div>
+							) }
+							{ this.state.progress === 'contentNewest' && (
+								<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_newest_progress }</div>
 							) }
 							{ ! kadenceStarterParams.isKadence && (
 								<div class="kadence_starter_templates_response">
 									<h2>{ __( 'This Template Requires the Kadence Theme', 'kadence-starter-templates' ) }</h2>
-									<ExternalLink href={ 'https://kadence-theme.com/' }>{ __( 'Get Free Theme', 'kadence-starter-templates' ) }</ExternalLink>
+									<ExternalLink href={ 'https://www.kadencewp.com/kadence-theme/?utm_source=in-app&utm_medium=kadence-starter-templates&utm_campaign=dashboard' }>{ __( 'Get Free Theme', 'kadence-starter-templates' ) }</ExternalLink>
 								</div>
 							) }
 							{ kadenceStarterParams.isKadence && (
@@ -781,7 +786,7 @@ class KadenceImporter extends Component {
 									{ pluginsMember && (
 										<div class="kadence_starter_templates_response">
 											<h2>{ __( 'Install Missing/Inactive Highlighted Premium plugins to Import', 'kadence-starter-templates' ) }</h2>
-											<ExternalLink href={ 'https://www.kadencewp.com/my-account/' }>{ __( 'Pro Account', 'kadence-starter-templates' ) }</ExternalLink>
+											<ExternalLink href={ 'https://www.kadencewp.com/my-account/?utm_source=in-app&utm_medium=kadence-starter-templates&utm_campaign=dashboard' }>{ __( 'Pro Account', 'kadence-starter-templates' ) }</ExternalLink>
 										</div>
 									) }
 									{ ! pluginsMember && (
@@ -790,7 +795,7 @@ class KadenceImporter extends Component {
 												<Fragment>
 													<KadenceSubscribeForm
 														emailError={ this.state.emailError }
-														onRun={ email => this.runSubscribeSingle( email ) }
+														onRun={ email => this.runSubscribeSingle( email, item.slug ) }
 													/>
 													<Button className="kb-skip-start subscribe" isPrimary disabled={ this.state.isFetching } onClick={ () => {
 															this.runPluginInstallSingle( item.slug, this.state.selectedPage, this.state.starterSettings['builderType'] );
@@ -844,27 +849,31 @@ class KadenceImporter extends Component {
 							{ ! kadenceStarterParams.isKadence && (
 								<div class="kadence_starter_templates_response">
 									<h2>{ __( 'This Starter Template Requires the Kadence Theme', 'kadence-starter-templates' ) }</h2>
-									<ExternalLink href={ 'https://kadence-theme.com/' }>{ __( 'Get Free Theme', 'kadence-starter-templates' ) }</ExternalLink>
+									<ExternalLink href={ 'https://www.kadencewp.com/kadence-theme/?utm_source=in-app&utm_medium=kadence-starter-templates&utm_campaign=dashboard' }>{ __( 'Get Free Theme', 'kadence-starter-templates' ) }</ExternalLink>
 								</div>
 							) }
 							{  kadenceStarterParams.isKadence && (
 								<Fragment>
-									{ this.state.hasContent && (
-										<div className="kadence_starter_templates_notice">
-											{ this.state.hasPastContent ? (
-												<Fragment>{ kadenceStarterParams.notice_previous }</Fragment>
-											) : (
-												<Fragment>{ kadenceStarterParams.notice }</Fragment>
-											) }
-										</div>
-									) }
-									{ this.state.hasPastContent && (
+									{ ! this.state.isFetching && (
 										<Fragment>
-											<ToggleControl
-												label={ __( 'Delete Previously Imported Posts and Images?', 'kadence-starter-templates' ) }
-												checked={ ( undefined !== this.state.removePast ? this.state.removePast : false ) }
-												onChange={ value => ( this.state.removePast ? this.setState( { removePast: false } ) : this.setState( { removePast: true } ) ) }
-											/>
+											{ this.state.hasContent && (
+												<div className="kadence_starter_templates_notice">
+													{ this.state.hasPastContent ? (
+														<Fragment>{ kadenceStarterParams.notice_previous }</Fragment>
+													) : (
+														<Fragment>{ kadenceStarterParams.notice }</Fragment>
+													) }
+												</div>
+											) }
+											{ this.state.hasPastContent && (
+												<Fragment>
+													<ToggleControl
+														label={ __( 'Delete Previously Imported Posts and Images?', 'kadence-starter-templates' ) }
+														checked={ ( undefined !== this.state.removePast ? this.state.removePast : false ) }
+														onChange={ value => ( this.state.removePast ? this.setState( { removePast: false } ) : this.setState( { removePast: true } ) ) }
+													/>
+												</Fragment>
+											) }
 										</Fragment>
 									) }
 									<PanelBody
@@ -984,21 +993,23 @@ class KadenceImporter extends Component {
 											</Fragment>
 										) }
 									</PanelBody>
-									<PanelBody
-										title={ __( 'Advanced Settings', 'kadence-blocks' ) }
-										initialOpen={ false }
-									>
-										<ToggleControl
-											label={ __( 'Import Customizer Settings', 'kadence-starter-templates' ) }
-											checked={ ( undefined !== this.state.installCustomizer ? this.state.installCustomizer : false ) }
-											onChange={ value => ( this.state.installCustomizer ? this.setState( { installCustomizer: false } ) : this.setState( { installCustomizer: true } ) ) }
-										/>
-										<ToggleControl
-											label={ __( 'Import Content', 'kadence-starter-templates' ) }
-											checked={ ( undefined !== this.state.installContent ? this.state.installContent : false ) }
-											onChange={ value => ( this.state.installContent ? this.setState( { installContent: false } ) : this.setState( { installContent: true } ) ) }
-										/>
-									</PanelBody>
+									{ ! this.state.isFetching && (
+										<PanelBody
+											title={ __( 'Advanced Settings', 'kadence-blocks' ) }
+											initialOpen={ false }
+										>
+											<ToggleControl
+												label={ __( 'Import Customizer Settings', 'kadence-starter-templates' ) }
+												checked={ ( undefined !== this.state.installCustomizer ? this.state.installCustomizer : false ) }
+												onChange={ value => ( this.state.installCustomizer ? this.setState( { installCustomizer: false } ) : this.setState( { installCustomizer: true } ) ) }
+											/>
+											<ToggleControl
+												label={ __( 'Import Content', 'kadence-starter-templates' ) }
+												checked={ ( undefined !== this.state.installContent ? this.state.installContent : false ) }
+												onChange={ value => ( this.state.installContent ? this.setState( { installContent: false } ) : this.setState( { installContent: true } ) ) }
+											/>
+										</PanelBody>
+									) }
 									{ pluginsPremium && (
 										<div className="install-third-party-notice">
 											<p className="desc-small">
@@ -1023,28 +1034,31 @@ class KadenceImporter extends Component {
 										</div>
 									) }
 									{ this.state.progress === 'subscribe' && (
-										<div class="kadence_starter_templates_response">{ kadenceStarterParams.subscribe_progress }</div>
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.subscribe_progress }</div>
 									) }
 									{ this.state.progress === 'remove' && (
-										<div class="kadence_starter_templates_response">{ kadenceStarterParams.remove_progress }</div>
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.remove_progress }</div>
 									) }
 									{ this.state.progress === 'plugins' && (
-										<div class="kadence_starter_templates_response">{ kadenceStarterParams.plugin_progress }</div>
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.plugin_progress }</div>
 									) }
 									{ this.state.progress === 'content' && (
-										<div class="kadence_starter_templates_response">{ kadenceStarterParams.content_progress }</div>
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_progress }</div>
 									) }
 									{ this.state.progress === 'contentNew' && (
-										<div class="kadence_starter_templates_response">{ kadenceStarterParams.content_new_progress }</div>
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_new_progress }</div>
+									) }
+									{ this.state.progress === 'contentNewer' && (
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_newer_progress }</div>
+									) }
+									{ this.state.progress === 'contentNewest' && (
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.content_newest_progress }</div>
 									) }
 									{ this.state.progress === 'customizer' && (
-										<div class="kadence_starter_templates_response">{ kadenceStarterParams.customizer_progress }</div>
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.customizer_progress }</div>
 									) }
 									{ this.state.progress === 'widgets' && (
-										<div class="kadence_starter_templates_response">{ kadenceStarterParams.widgets_progress }</div>
-									) }
-									{ this.state.isFetching && (
-										<Spinner />
+										<div class="kadence_starter_templates_response"><Spinner />{ kadenceStarterParams.widgets_progress }</div>
 									) }
 									{ kadenceStarterParams.isKadence && (
 										<Fragment>
@@ -1053,7 +1067,7 @@ class KadenceImporter extends Component {
 													{ pluginsMember && (
 														<div class="kadence_starter_templates_response">
 															<h2>{ __( 'Install Missing/Inactive Highlighted Premium plugins to Import', 'kadence-starter-templates' ) }</h2>
-															<ExternalLink href={ 'https://www.kadencewp.com/my-account/' }>{ __( 'Pro Account', 'kadence-starter-templates' ) }</ExternalLink>
+															<ExternalLink href={ 'https://www.kadencewp.com/my-account/?utm_source=in-app&utm_medium=kadence-starter-templates&utm_campaign=dashboard' }>{ __( 'Pro Account', 'kadence-starter-templates' ) }</ExternalLink>
 														</div>
 													) }
 													{ ! pluginsMember && (
@@ -1074,7 +1088,7 @@ class KadenceImporter extends Component {
 													{ pluginsMember && (
 														<div class="kadence_starter_templates_response">
 															<h2>{ __( 'Install Missing/Inactive Highlighted Premium plugins to Import', 'kadence-starter-templates' ) }</h2>
-															<ExternalLink href={ 'https://www.kadencewp.com/my-account/' }>{ __( 'Pro Account', 'kadence-starter-templates' ) }</ExternalLink>
+															<ExternalLink href={ 'https://www.kadencewp.com/my-account/?utm_source=in-app&utm_medium=kadence-starter-templates&utm_campaign=dashboard' }>{ __( 'Pro Account', 'kadence-starter-templates' ) }</ExternalLink>
 														</div>
 													) }
 													{ ! pluginsMember && (
@@ -1083,7 +1097,7 @@ class KadenceImporter extends Component {
 																<Fragment>
 																	<KadenceSubscribeForm
 																		emailError={ this.state.emailError }
-																		onRun={ email => this.runSubscribe( email ) }
+																		onRun={ email => this.runSubscribe( email, item.slug ) }
 																	/>
 																	<Button className="kb-skip-start" isPrimary disabled={ this.state.isFetching } onClick={ () => {
 																		if ( this.state.removePast ) {
@@ -1182,44 +1196,146 @@ class KadenceImporter extends Component {
 		}
 		const KadenceSitesGrid = () => {
 			const control = this;
-			return (
-				<div className="templates-grid">
-					{/* { map( ( this.state.starterSettings['builderType'] === 'elementor' ? this.state.etemplates : this.state.templates ), ( { name, key, slug, image, content, categories, keywords, pro, pages } ) => { */}
-					{ Object.keys( this.state.activeTemplates ).map( function( key, index ) {
-						const name = control.state.activeTemplates[key].name;
-						const slug = control.state.activeTemplates[key].slug;
-						const image = control.state.activeTemplates[key].image;
-						const categories = control.state.activeTemplates[key].categories;
-						const keywords = control.state.activeTemplates[key].keywords;
-						const pro = control.state.activeTemplates[key].pro;
-						const member = control.state.activeTemplates[key].member;
-						const pages = control.state.activeTemplates[key].pages;
-						if ( ( 'all' === control.state.category || categories.includes( control.state.category ) ) && ( ! control.state.search || ( keywords && keywords.some( x => x.toLowerCase().includes( control.state.search.toLowerCase() ) ) ) ) ) {
-							return (
-								<div className="kst-template-item">
-									<Button
-										key={ key }
-										className="kst-import-btn"
-										isSmall
-										onClick={ () => ( 'custom' === control.state.starterSettings[ 'builderType' ] ? control.jumpToImport( slug ) : control.fullFocusMode( slug ) ) }
-										//onClick={ () => control.fullFocusMode( slug ) }
-									>
-										<LazyLoad offsetBottom={200}>
-											<img src={ pages && pages.home && pages.home.thumbnail ? pages.home.thumbnail : image } alt={ name } />
-										</LazyLoad>
-										<div className="demo-title">
-											<h4>{ name }</h4>
-										</div>
-									</Button>
-									{ undefined !== pro && pro && (
-										<Fragment>
-											<span className="kb-pro-template">{ __( 'Pro', 'kadence-starter-sites' ) }</span>
-										</Fragment>
-									) }
-								</div>
-							);
+			const cats = [ 'all' ];
+			if ( this.state.activeTemplates && Object.keys( this.state.activeTemplates ).length > 1 ) {
+				{ Object.keys( this.state.activeTemplates ).map( function( key, index ) {
+					if ( control.state.activeTemplates[ key ].categories ) {
+						for ( let c = 0; c < control.state.activeTemplates[ key ].categories.length; c++ ) {
+							if ( ! cats.includes( control.state.activeTemplates[ key ].categories[ c ] ) ) {
+								cats.push( control.state.activeTemplates[ key ].categories[ c ] );
+							}
 						}
-					} ) }
+					}
+				} ) }
+			}
+			const catControlsRender = cats.map( ( item ) => {
+				return (
+					<MenuItem
+						className={ ( item === control.state.category ? 'active-item' : '' ) }
+						isSelected={ ( item === control.state.category ? true : false ) }
+						onClick={ () => this.setState( { category: item } ) }
+					>
+						{ control.capitalizeFirstLetter( item ) }
+					</MenuItem>
+				);
+			} );
+			return (
+				<div className="kadence-site-grid-wrap">
+					<div className="kadence-site-header">
+						<div className="kadence-site-header-left">
+							{ this.state.starterSettings['builderType'] === 'blocks' && cats.length > 1 && (
+								<Fragment>
+									<span className="filter-title">{ __( 'Filter:', 'kadence-starter-templates' ) }</span>
+									<Dropdown
+										className="kadence-site-grid-header-popover"
+										contentClassName="kst-category-popover"
+										position="bottom center"
+										label={ __( 'Select a Category', 'kadence-blocks' ) }
+										renderToggle={ ( { isOpen, onToggle } ) => (
+											<Button onClick={ onToggle } aria-expanded={ isOpen } icon={ tag } >
+												{ this.capitalizeFirstLetter( control.state.category ) }
+												<Icon className="kst-chev" icon={ chevronDown } />
+											</Button>
+										) }
+										renderContent={ ( { isOpen, onToggle } ) => (
+											<div>
+												{ catControlsRender }
+											</div>
+										) }
+									/>
+									<Dropdown
+										className="kadence-site-grid-header-popover"
+										contentClassName="kst-category-popover"
+										position="bottom center"
+										label={ __( 'Select Free or Pro', 'kadence-blocks' ) }
+										renderToggle={ ( { isOpen, onToggle } ) => (
+											<Button onClick={ onToggle } aria-expanded={ isOpen } icon={ heading } >
+												{ control.state.level === 'free' && (
+													__( 'Free Only', 'kadence-starter-templates' )
+												) }
+												{ control.state.level === 'pro' && (
+													__( 'Pro Only', 'kadence-starter-templates' )
+												) }
+												{ control.state.level === 'all' && (
+													__( 'Free & Pro', 'kadence-starter-templates' )
+												) }
+												<Icon className="kst-chev" icon={ chevronDown } />
+											</Button>
+										) }
+										renderContent={ ( { isOpen, onToggle } ) => (
+											<div>
+												<MenuItem
+													className={ ( 'all' === control.state.level ? 'active-item' : '' ) }
+													isSelected={ ( 'all' === control.state.level ? true : false ) }
+													onClick={ () => this.setState( { level: 'all' } ) }
+												>
+													{ __( 'Free & Pro', 'kadence-starter-templates' ) }
+												</MenuItem>
+												<MenuItem
+													className={ ( 'pro' === control.state.level ? 'active-item' : '' ) }
+													isSelected={ ( 'pro' === control.state.level ? true : false ) }
+													onClick={ () => this.setState( { level: 'pro' } ) }
+												>
+													{ __( 'Pro Only', 'kadence-starter-templates' ) }
+												</MenuItem>
+												<MenuItem
+													className={ ( 'free' === control.state.level ? 'active-item' : '' ) }
+													isSelected={ ( 'free' === control.state.level ? true : false ) }
+													onClick={ () => this.setState( { level: 'free' } ) }
+												>
+													{ __( 'Free Only', 'kadence-starter-templates' ) }
+												</MenuItem>
+											</div>
+										) }
+									/>
+								</Fragment>
+							) }
+						</div>
+						<div className="kadence-site-grid-header-right">
+							{ this.state.starterSettings['builderType'] === 'blocks' && cats.length > 1 && (
+								<span className="page-source-notice">{ __( 'This page is loaded from', 'kadence-starter-templates' ) + ' ' }<ExternalLink href={ 'https://www.kadencewp.com/?utm_source=in-app&utm_medium=kadence-starter-templates&utm_campaign=dashboard' }>kadencewp.com</ExternalLink></span>
+							) }
+						</div>
+					</div>
+					<div className="templates-grid">
+						
+						{/* { map( ( this.state.starterSettings['builderType'] === 'elementor' ? this.state.etemplates : this.state.templates ), ( { name, key, slug, image, content, categories, keywords, pro, pages } ) => { */}
+						{ Object.keys( this.state.activeTemplates ).map( function( key, index ) {
+							const name = control.state.activeTemplates[key].name;
+							const slug = control.state.activeTemplates[key].slug;
+							const image = control.state.activeTemplates[key].image;
+							const categories = control.state.activeTemplates[key].categories;
+							const keywords = control.state.activeTemplates[key].keywords;
+							const pro = control.state.activeTemplates[key].pro;
+							const member = control.state.activeTemplates[key].member;
+							const pages = control.state.activeTemplates[key].pages;
+							if ( ( 'all' === control.state.category || categories.includes( control.state.category ) ) && ( 'all' === control.state.level || ( ( control.state.level === 'pro' && pro ) || ( control.state.level === 'free' && ! pro ) ) ) && ( ! control.state.search || ( keywords && keywords.some( x => x.toLowerCase().includes( control.state.search.toLowerCase() ) ) ) ) ) {
+								return (
+									<div className="kst-template-item">
+										<Button
+											key={ key }
+											className="kst-import-btn"
+											isSmall
+											onClick={ () => ( 'custom' === control.state.starterSettings[ 'builderType' ] ? control.jumpToImport( slug ) : control.fullFocusMode( slug ) ) }
+											//onClick={ () => control.fullFocusMode( slug ) }
+										>
+											<LazyLoad offsetBottom={700}>
+												<img src={ pages && pages.home && pages.home.thumbnail ? pages.home.thumbnail : image } alt={ name } />
+											</LazyLoad>
+											<div className="demo-title">
+												<h4>{ name }</h4>
+											</div>
+										</Button>
+										{ undefined !== pro && pro && (
+											<Fragment>
+												<span className="kb-pro-template">{ __( 'Pro', 'kadence-starter-sites' ) }</span>
+											</Fragment>
+										) }
+									</div>
+								);
+							}
+						} ) }
+					</div>
 				</div>
 			);
 		}

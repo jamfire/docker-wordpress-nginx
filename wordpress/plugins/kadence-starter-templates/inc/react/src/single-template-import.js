@@ -191,7 +191,7 @@ class KadenceSingleTemplateImport extends Component {
 							{ ! kadenceStarterParams.isKadence && (
 								<div class="kadence_starter_templates_response">
 									<h2>{ __( 'This Template Requires the Kadence Theme', 'kadence-starter-templates' ) }</h2>
-									<ExternalLink href={ 'https://kadence-theme.com/' }>{ __( 'Get Free Theme', 'kadence-starter-templates' ) }</ExternalLink>
+									<ExternalLink href={ 'https://www.kadencewp.com/kadence-theme/' }>{ __( 'Get Free Theme', 'kadence-starter-templates' ) }</ExternalLink>
 								</div>
 							) }
 							{ kadenceStarterParams.isKadence && (

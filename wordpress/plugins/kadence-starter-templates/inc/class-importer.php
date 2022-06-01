@@ -178,14 +178,14 @@ class Importer {
 		} else {
 			add_filter( 'wxr_importer.pre_process.post_meta', array( $this, 'process_elementor_images' ), 10, 2 );
 			add_filter( 'wxr_importer.pre_process.post', array( $this, 'process_kadence_block_css' ), 10, 4 );
-			//add_filter( 'wp_import_post_data_processed', array( $this, 'process_kadence_block_css_post' ), 10, 2 );
+				//add_filter( 'wp_import_post_data_processed', array( $this, 'process_kadence_block_css_post' ), 10, 2 );
 			add_filter( 'wxr_importer.pre_process.post', array( $this, 'process_internal_links' ), 11, 4 );
-			//add_action( 'wxr_importer.processed.post', array( $this, 'process_internal_links' ), 10, 5 );
-			// Check, if we need to send another AJAX request and set the importing author to the current user.
+				//add_action( 'wxr_importer.processed.post', array( $this, 'process_internal_links' ), 10, 5 );
+				// Check, if we need to send another AJAX request and set the importing author to the current user.
 			add_filter( 'wxr_importer.pre_process.post', array( $this, 'new_ajax_request_maybe' ) );
-			//add_action( 'wxr_importer.processed.post', array( $this, 'process_kadence_block_css_processed' ), 10, 5 );
-			//add_filter( 'wxr_importer.pre_process.post', array( $this, 'process_kadence_block_css' ), 10, 5 );
-			//add_action( 'wxr_importer.processed.post', array( $this, 'process_kadence_galleries' ), 10, 5 );
+				//add_action( 'wxr_importer.processed.post', array( $this, 'process_kadence_block_css_processed' ), 10, 5 );
+				//add_filter( 'wxr_importer.pre_process.post', array( $this, 'process_kadence_block_css' ), 10, 5 );
+				//add_action( 'wxr_importer.processed.post', array( $this, 'process_kadence_galleries' ), 10, 5 );
 		}
 
 		// Disables generation of multiple image sizes (thumbnails) in the content import step.
@@ -268,7 +268,9 @@ class Importer {
 				}
 				if ( ! empty( $link_mapping ) ) {
 					foreach ( $link_mapping as $old_url => $new_url ) {
-						$data['post_content'] = str_replace( $old_url, $new_url, $data['post_content'] );
+						$old_url_full = '"' . $old_url . '"';
+						$new_url_full = '"' . $new_url . '"';
+						$data['post_content'] = str_replace( $old_url_full, $new_url_full, $data['post_content'] );
 
 						// Replace the slashed URLs if any exist.
 						$old_url = str_replace( '/', '/\\', $old_url );
@@ -294,9 +296,6 @@ class Importer {
 					$slash = str_replace( 'n ', '\n ', $block['attrs']['kadenceBlockCSS'] );
 					$slash = str_replace( ';n', ';\n', $slash );
 					$slash = str_replace( 'nselector', '\nselector', $slash );
-					// $update = str_replace( 'n ', '\\\n ', $block['attrs']['kadenceBlockCSS'] );
-					// $update = str_replace( ';n', ';\\\n', $update );
-					// $update = str_replace( 'nselector', '\\\nselector', $update );
 					$update = str_replace( 'n ', '', $block['attrs']['kadenceBlockCSS'] );
 					$update = str_replace( ';n', ';', $update );
 					$update = str_replace( 'nselector', 'selector', $update );
@@ -322,8 +321,6 @@ class Importer {
 			$post_content = parse_blocks( $data['post_content'] );
 			foreach ( $post_content as $block ) {
 				if ( ! empty( $block['attrs']['kadenceBlockCSS'] ) ) {
-					//error_log( print_r( $data['post_content'], true ) );
-					//error_log( print_r( $block['attrs']['kadenceBlockCSS'], true ) );
 					$slash = str_replace( 'n ', '\n ', $block['attrs']['kadenceBlockCSS'] );
 					$slash = str_replace( ';n', ';\n', $slash );
 					$slash = str_replace( '; n', '; \n', $slash );
@@ -332,9 +329,6 @@ class Importer {
 					$update = str_replace( ';n', ';\\\n', $update );
 					$update = str_replace( '; n', '; \\\n', $update );
 					$update = str_replace( 'nselector', '\\\nselector', $update );
-					// $update = str_replace( 'n ', '', $block['attrs']['kadenceBlockCSS'] );
-					// $update = str_replace( ';n', ';', $update );
-					// $update = str_replace( 'nselector', 'selector', $update );
 					$data['post_content'] = str_replace( $slash, $update, $data['post_content'] );
 					$data['post_content'] = str_replace( $block['attrs']['kadenceBlockCSS'], $update, $data['post_content'] );
 				}
@@ -361,12 +355,6 @@ class Importer {
 			$content = parse_blocks( $data['post_content'] );
 			foreach ( $content as $indexkey => $block ) {
 				if ( ! empty( $block['attrs']['kadenceBlockCSS'] ) ) {
-					//stripslashes( $data['post_content'] )
-					// $slash = str_replace( '{n ', '{\n ', $block['attrs']['kadenceBlockCSS'] );
-					// $slash = str_replace( ';n', ';\n', $slash );
-					// $slash = str_replace( '; n', '; \n', $slash );
-					// $slash = str_replace( '}n', '}\n', $slash );
-					// $slash = str_replace( 'nselector', '\nselector', $slash );
 					$slash = wp_json_encode( $block['attrs']['kadenceBlockCSS'] );
 					$update = str_replace( '\n', '\\\n', $slash );
 					$slash = str_replace( '--global-palette', '\u002d\u002dglobal-palette', $slash );
@@ -374,20 +362,6 @@ class Importer {
 						$data['post_content'] = str_replace( $slash, $update, $data['post_content'] );
 					}
 				}
-				// if ( 'kadence/testimonials' === $block['blockName'] ) {
-				// 	if ( isset( $block['attrs'] ) && is_array( $block['attrs'] ) ) {
-				// 		if ( ! empty( $block['attrs']['testimonials'] ) && is_array( $block['attrs']['testimonials'] ) ) {
-				// 			foreach ( $block['attrs']['testimonials'] as $test_key => $test_content ) {
-				// 				if ( ! empty( $test_content['title'] ) ) {
-				// 					$test_slash = wp_json_encode( $test_content['title'] );
-				// 					$test_update = str_replace( '\"', '\\"', $test_slash );
-				// 					$test_update = str_replace( '<\/', '<\\/', $test_update );
-				// 					$data['post_content'] = str_replace( $test_slash, $test_update, $data['post_content'] );
-				// 				}
-				// 			}
-				// 		}
-				// 	}
-				// }
 				if ( isset( $block['innerBlocks'] ) && ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
 					$data['post_content'] = $this->blocks_cycle_through( $data['post_content'], $block['innerBlocks'] );
 				}
@@ -403,21 +377,6 @@ class Importer {
 	public function blocks_cycle_through( $post_content, $inner_blocks ) {
 		foreach ( $inner_blocks as $in_indexkey => $inner_block ) {
 			if ( ! empty( $inner_block['attrs']['kadenceBlockCSS'] ) ) {
-				// $slash = str_replace( '{n ', '{\n ', $inner_block['attrs']['kadenceBlockCSS'] );
-				// $slash = str_replace( ';n', ';\n', $slash );
-				// $slash = str_replace( '; n', '; \n', $slash );
-				// $slash = str_replace( 'nselector', '\nselector', $slash );
-				// $update = str_replace( '{\n ', '{\\\n ', $inner_block['attrs']['kadenceBlockCSS'] );
-				// $update = str_replace( ';\n', ';\\\n', $update );
-				// $update = str_replace( '; \n', '; \\\n', $update );
-				// $update = str_replace( '\nselector', '\\\nselector', $update );
-				// $update = str_replace( '{n ', '{\\\n ', $update );
-				// $update = str_replace( ';n', ';\\\n', $update );
-				// $update = str_replace( '; n', '; \\\n', $update );
-				// $update = str_replace( 'nselector', '\\\nselector', $update );
-				// $update = str_replace( 'n ', '', $block['attrs']['kadenceBlockCSS'] );
-				// $update = str_replace( ';n', ';', $update );
-				// $update = str_replace( 'nselector', 'selector', $update );
 				$slash = wp_json_encode( $inner_block['attrs']['kadenceBlockCSS'] );
 				$update = str_replace( '\n', ' \\\n', $slash );
 				$slash = str_replace( '--global-palette', '\u002d\u002dglobal-palette', $slash );
@@ -425,20 +384,6 @@ class Importer {
 					$post_content = str_replace( $slash, $update, $post_content );
 				}
 			}
-			// if ( 'kadence/testimonials' === $inner_block['blockName'] ) {
-			// 	if ( isset( $inner_block['attrs'] ) && is_array( $inner_block['attrs'] ) ) {
-			// 		if ( ! empty( $inner_block['attrs']['testimonials'] ) && is_array( $inner_block['attrs']['testimonials'] ) ) {
-			// 			foreach ( $inner_block['attrs']['testimonials'] as $test_key => $test_content ) {
-			// 				if ( ! empty( $test_content['title'] ) ) {
-			// 					$test_slash = wp_json_encode( $test_content['title'] );
-			// 					$test_update = str_replace( '\"', '\\"', $test_slash );
-			// 					$test_update = str_replace( '<\/', '<\\/', $test_update );
-			// 					$post_content = str_replace( $test_slash, $test_update, $post_content );
-			// 				}
-			// 			}
-			// 		}
-			// 	}
-			// }
 			if ( isset( $inner_block['innerBlocks'] ) && ! empty( $inner_block['innerBlocks'] ) && is_array( $inner_block['innerBlocks'] ) ) {
 				$post_content = $this->blocks_cycle_through( $post_content, $inner_block['innerBlocks'] );
 			}
@@ -469,7 +414,6 @@ class Importer {
 			foreach ( $images as $image ) {
 				if ( ! empty( $image['url'] ) ) {
 					$this->replace_image_urls( $meta_item['value'] );
-					//error_log( print_r( $images, true ) );
 				}
 			}
 		}

@@ -10,7 +10,7 @@ services:
   # automatically add ssl through ssl (unless you manually supply ssl certs) and
   # exposeing them to the frontend.
   traefik:
-    image: traefik:${TRAEFIK_VERSION:-v2.6}
+    image: traefik:${TRAEFIK_VERSION:-v2.7}
     container_name: ${PROJECT:-wordpress}_traefik
     restart: always
     command:
@@ -35,30 +35,30 @@ services:
 
   # Nginx
   # Nginx is being used to reverse proxy to the php-fpm process being
-  # served by the WordPress service. It also passes static asset requests 
+  # served by the WordPress service. It also passes static asset requests
   # from Traefik to to WordPress.
   nginx:
     depends_on:
       - wordpress
-    image: nginx:${NGINX_VERSION:-alpine}
+    image: nginx:${NGINX_VERSION:-1.21}
     container_name: ${PROJECT:-wordpress}_nginx
     restart: always
     environment:
       - NGINX_HOST=${NGINX_HOST:-wordpress.local}
     volumes:
       - wp_data:/var/www/html
-      - ./wordpress/plugins:/var/www/html/wp-content/plugins
-      - ./wordpress/themes:/var/www/html/wp-content/themes
-      - ./templates:/etc/nginx/templates
-    expose: 
+      # - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      # - ./wordpress/themes:/var/www/html/wp-content/themes
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+    expose:
       - 80
-    labels: 
+    labels:
       - traefik.enable=true
-      - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST}`)
+      - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST:-wordpress.local}`)
       - traefik.http.routers.wordpress.tls=true
       - traefik.http.routers.wordpress.tls.certresolver=le
     # extra_hosts:
-    #   - ${NGINX_HOST}:traefik
+    #   - ${NGINX_HOST:-wordpress.local}:traefik
     networks:
       - traefik
       - wordpress
@@ -70,7 +70,7 @@ services:
     depends_on:
       - db
     # build: ./wordpress
-    image: wordpress:fpm-alpine
+    image: wordpress:${WORDPRESS_VERSION:-6.0-fpm-alpine}
     container_name: ${PROJECT:-wordpress}_wordpress
     restart: always
     environment:
@@ -87,16 +87,16 @@ services:
       - wp_data:/var/www/html
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/themes:/var/www/html/wp-content/themes
-      - ./conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
       - ~/.ssh/id_rsa/:/root/.ssh/id_rsa
-    extra_hosts:
-      - ${NGINX_HOST}:nginx
+    # extra_hosts:
+    #   - ${NGINX_HOST:-wordpress.local}:nginx
     networks:
       - wordpress
 
   # WordPress CLI
   # Manage your WordPress installation with the WP CLI. Under the scripts folder,
-  # this service is being used to sync the database and uploads from a production 
+  # this service is being used to sync the database and uploads from a production
   # server.
   wpcli:
     depends_on:
@@ -128,13 +128,17 @@ services:
     container_name: ${PROJECT:-wordpress}_db
     volumes:
       - db_data:/var/lib/mysql
-      - ./conf/my.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     restart: always
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-password}
       MYSQL_DATABASE: ${DB_NAME:-wordpress}
       MYSQL_USER: ${DB_USER:-wordpress}
       MYSQL_PASSWORD: ${DB_PASS:-password}
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$DB_ROOT_PASSWORD
+      interval: 5s
+      retries: 10
     networks:
       - wordpress
 
@@ -150,7 +154,7 @@ services:
       - wordpress
 
   # Watchtower
-  # Automatically pull new docker images as they're updated. This is useful for 
+  # Automatically pull new docker images as they're updated. This is useful for
   # private sites behind a VPN that don't have public access to tools like webhooks
   # for deploying changes.
   watchtower:
@@ -162,7 +166,7 @@ services:
     command: --interval 30
 
 volumes:
-  db_data: 
+  db_data:
     driver: local
     name: ${PROJECT:-wordpress}_wordpress-db-data
   wp_data:

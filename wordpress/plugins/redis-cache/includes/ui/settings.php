@@ -104,14 +104,14 @@ defined( '\\ABSPATH' ) || exit;
 
                 <?php if ( $is_php7 && $is_phpredis311 ) : ?>
 
-                    <p class="compatiblity">
+                    <p class="compatibility">
                         <span class="dashicons dashicons-yes"></span>
                         <span><?php esc_html_e( 'Your site meets the system requirements for the Pro version.', 'redis-cache' ); ?></span>
                     </p>
 
                 <?php else : ?>
 
-                    <p class="compatiblity">
+                    <p class="compatibility">
                         <span class="dashicons dashicons-no"></span>
                         <span><?php echo wp_kses_post( __( 'Your site <i>does not</i> meet the requirements for the Pro version:', 'redis-cache' ) ); ?></span>
                     </p>

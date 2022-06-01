@@ -6,10 +6,25 @@ $color-gray-500: #A0AEC0;
 $color-gray-600: #718096;
 $color-gray-700: #4A5568;
 $color-gray-800: #2D3748;
+.kadence-site-header-left {display: flex;align-items: center;}
+.kadence-site-grid-wrap .kadence-site-header {display: flex;justify-content: space-between;align-items: center;}
+.kadence-site-header-left .filter-title {margin-right: 10px;font-weight: bold;}
+.kadence-site-grid-header-right {
+	text-align: right;
+}
+.kadence-site-header .page-source-notice {
+	color: $color-gray-600;
+    font-size: 85%;
+	a {
+		color: #0066CC;
+		font-weight: 500;
+		text-decoration: none;
+	}
+}
 .kb-pro-template {
     padding: 4px 10px;
     position: absolute;
-    z-index: 10000;
+    z-index: 10;
     bottom: 10px;
     right: 10px;
     background: #C53030;
@@ -475,6 +490,8 @@ h3.kst-selected-font-pair-title {
 }
 .components-modal__frame.kst-import-modal {
     max-width: 600px;
+	position: relative;
+	max-height: 90%;
 }
 .components-modal__frame.kst-import-modal .components-button.is-primary {
     margin-top: 20px;
@@ -487,6 +504,12 @@ h3.kst-selected-font-pair-title {
     color: #4A5568;
     font-weight: normal;
 }
+.kadence-site-grid-header-popover .components-dropdown__content .components-button.components-menu-item__button.active-item {
+	border: 1px solid #a0aec0;
+    background: #EDF2F7;
+    font-weight: bold;
+}
+.kadence-site-grid-wrap .kadence-site-header {margin-top: -10px;padding-bottom: 10px;}
 .kst-import-modal ul.kadence-required-wrap {
     margin-bottom: 20px;
 }
@@ -504,6 +527,16 @@ h3.kst-selected-font-pair-title {
     color: #c05621;
     font-weight: bold;
 	margin-top: 30px;
+	display: flex;
+	align-items: center;
+	svg.components-spinner {
+		margin-top: 0;
+	}
+}
+.components-modal__content .kadence_starter_templates_response {
+    background: #edfaff;
+    border: 1px solid #1eb1ff;
+    color: #0d549b;
 }
 .kst-import-selection-title .components-button.kt-import-back {
     border: 1px solid;
@@ -1023,5 +1056,8 @@ button.components-button.kt-import-fullsite.is-primary {
     display: block;
     margin-bottom: 10px;
     color: #d8000c;
-    background-color: #ffbaba;
+    background-color: #ffdddf;
+}
+.theme-install-overlay #kadence-starter-preview {
+    width: 100%;
 }
