@@ -11,7 +11,6 @@ services:
   # exposeing them to the frontend.
   traefik:
     image: traefik:${TRAEFIK_VERSION:-v2.7}
-    container_name: ${PROJECT:-wordpress}_traefik
     restart: always
     command:
       - --accesslog
@@ -44,7 +43,6 @@ services:
     depends_on:
       - wordpress
     image: nginx:${NGINX_VERSION:-1.21}
-    container_name: ${PROJECT:-wordpress}_nginx
     restart: always
     environment:
       - NGINX_HOST=${NGINX_HOST:-wordpress.local}
@@ -69,10 +67,10 @@ services:
   # Apache WordPress image but Nginx typically offers better static file performance.
   wordpress:
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     # build: ./wordpress
     image: wordpress:${WORDPRESS_VERSION:-6.0-fpm-alpine}
-    container_name: ${PROJECT:-wordpress}_wordpress
     restart: always
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -84,6 +82,8 @@ services:
         /* Redis Ojbect Cache */
         define( 'WP_REDIS_HOST', 'redis' );
         define( 'WP_REDIS_PORT', 6379 );
+        /* Nginx Cache */
+        define( 'RT_WP_NGINX_HELPER_CACHE_PATH', '/var/run/nginx-cache' );
     volumes:
       - wp_data:/var/www/html
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
@@ -99,10 +99,9 @@ services:
   # server.
   wpcli:
     depends_on:
-      - db
-      - wordpress
+      database:
+        condition: service_healthy
     image: wordpress:cli
-    container_name: ${PROJECT:-wordpress}_wpcli
     user: xfs
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -113,6 +112,8 @@ services:
         /* Redis Ojbect Cache */
         define( 'WP_REDIS_HOST', 'redis' );
         define( 'WP_REDIS_PORT', 6379 );
+        /* Nginx Cache */
+        define( 'RT_WP_NGINX_HELPER_CACHE_PATH', '/var/run/nginx-cache' );
     volumes:
       - wp_data:/var/www/html
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
@@ -124,7 +125,6 @@ services:
   # This MariaDB service adds a database for the WordPress application.
   db:
     image: mariadb:${MARIADB_VERSION:-10.7}
-    container_name: ${PROJECT:-wordpress}_db
     volumes:
       - db_data:/var/lib/mysql
       - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -145,7 +145,6 @@ services:
   # This stack uses Redis as a Database Object Cache for WordPress
   redis:
     image: redis:${REDIS_VERSION:-alpine}
-    container_name: ${PROJECT:-wordpress}_redis
     restart: always
     volumes:
       - redis_data:/data
@@ -156,13 +155,12 @@ services:
   # Automatically pull new docker images as they're updated. This is useful for
   # private sites behind a VPN that don't have public access to tools like webhooks
   # for deploying changes.
-  watchtower:
-    image: containrrr/watchtower:latest
-    container_name: ${PROJECT:-wordpress}_watchtower
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30
+  # watchtower:
+  #   image: containrrr/watchtower:latest
+  #   restart: always
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   command: --interval 30
 
 volumes:
   db_data:

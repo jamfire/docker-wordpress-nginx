@@ -1,9 +1,0 @@
-/* Prevent stutter from JavaScript UI replacement */
-body.js {
-
-	select,
-	div.chosen-container {
-		min-width: 58px;
-		max-width: 300px;
-	}
-}
