@@ -8,10 +8,6 @@
 *.zip
 .DS_Store
 
-# certs
-certs/*
-!certs/.gitkeep
-
 # wordpress plugins
 wordpress/plugins/hello.php
 
