@@ -12,6 +12,13 @@ else
     exit 1
 fi
 
+# Backup certificates
+printf "${BLUE}[docker]${NC} backing up le_data volume...\r\n"
+docker run --rm \
+    -v ${COMPOSE_PROJECT_NAME}_le_data:/data \
+    -v $(pwd)/backups:/backup ubuntu \
+    tar -cf /backup/le_data.tar /data
+
 # Backup Database
 printf "${BLUE}[docker]${NC} backing up db_data volume...\r\n"
 docker run --rm \
