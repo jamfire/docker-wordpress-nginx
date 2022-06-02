@@ -65,7 +65,7 @@ docker compose down             # remove containers
 
 ## Scripts
 
-This repository includes various scripts located under ```./scripts``` to administer backups, etc.
+This repository includes various scripts located under ```./scripts``` to administer backups, etc. These scripts rely on a ```.env``` file in the root directory of your project. Scripts need to be run from the root diretory in order to read the ```.env``` file.
 
 ```
 sh ./scripts/backup-volumes.sh  # Backup traefik, wordpress, and database data
