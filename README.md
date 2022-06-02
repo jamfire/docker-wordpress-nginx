@@ -26,6 +26,17 @@ This stack can be configured for different environments using the ```.env``` dot
 
 Service configuration can be adjusted under ```/.docker```. You can adjust settings like php memory, nginx conf, mysql memory limit, and etc.
 
+```
+.docker
+├── mysql
+│   └── my.cnf
+├── nginx
+│   └── conf.d
+│       └── default.conf
+└── php
+    └── custom.ini
+```
+
 ## Step 2: Start Docker Stack
 
 In a development environment, you can download [Docker Desktop](https://www.docker.com/products/docker-desktop). On other systems, you will need to install Docker Engine and start the dameon.
