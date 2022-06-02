@@ -13,9 +13,8 @@ certs/*
 !certs/.gitkeep
 
 # wordpress plugins
-wordpress/plugins/wordpress-admin-style
-wordpress/plugins/push-sync
+wordpress/plugins/hello.php
 
 # wordpress themes
 wordpress/themes/twenty*
-!wordpress/themes/twentytwentyone
+!wordpress/themes/twentytwentytwo
