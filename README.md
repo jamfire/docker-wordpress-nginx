@@ -18,7 +18,9 @@ This repository is meant to act as a template for setting up your WordPress stac
 
 **Step 2**: Start docker and launch this stack using ```docker compose up -d```.
 
-## Step 1: Environment Configuration
+## Step 1: Configuration
+
+### Environment Configuration
 
 This stack can be configured for different environments using the ```.env``` dotfile. See ```.env-template``` for all variables available. Copy ```.env-template``` to ```.env``` and update as necessary. This is where you change database username and password, update nginx configuration, specify which docker image versions to use for each service, etc.
 
