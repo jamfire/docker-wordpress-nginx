@@ -86,3 +86,15 @@ Add the ip/domain entry to /etc/hosts.
 ```
 10.211.55.40    wordpress.local
 ```
+
+You can ssh into your multipass instance to execute docker compose commands by executing the following commands:
+
+```
+multipass sh docker-wordpress       # docker-wordpress is the name of the
+                                    # instance supplied in multipass.sh
+
+cd wordpress                        # cd into the mounted directory
+
+docker compose logs -f              # view the logs
+
+```
