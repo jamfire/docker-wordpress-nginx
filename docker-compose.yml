@@ -58,9 +58,12 @@ services:
       - traefik.http.routers.wordpress.rule=Host(`${NGINX_HOST:-wordpress.local}`)
       - traefik.http.routers.wordpress.tls=true
       - traefik.http.routers.wordpress.tls.certresolver=le
+    extra_hosts:
+      - ${NGINX_HOST:-wordpress.local}:127.0.0.1
     networks:
-      - traefik
-      - wordpress
+      traefik:
+      wordpress:
+        ipv4_address: 10.1.0.100
 
   # WordPress FPM
   # This is the WordPress service with php-fpm. It could be replaced with the
@@ -90,6 +93,8 @@ services:
       - ./wordpress/themes:/var/www/html/wp-content/themes
       - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
       - ~/.ssh/id_rsa/:/root/.ssh/id_rsa
+    extra_hosts:
+      - ${NGINX_HOST:-wordpress.local}:10.1.0.100
     networks:
       - wordpress
 
@@ -99,7 +104,7 @@ services:
   # server.
   wpcli:
     depends_on:
-      database:
+      db:
         condition: service_healthy
     image: wordpress:cli
     user: xfs
@@ -182,3 +187,7 @@ networks:
   wordpress:
     driver: bridge
     name: wordpress
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.0.0/24
