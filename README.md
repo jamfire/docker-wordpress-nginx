@@ -62,7 +62,8 @@ docker-wordpress        Running           10.211.55.40     Ubuntu 21.10
                                           172.19.0.1
 ```
 
+Add the ip/domain entry to /etc/hosts.
+
 ```
-# /etc/hosts
 10.211.55.40 wordpress.local
 ```
