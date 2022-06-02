@@ -39,11 +39,12 @@ Service configuration can be adjusted under ```/.docker```. You can adjust setti
     └── custom.ini
 ```
 
-## Step 2: Start Docker Stack
+### Step 2: Start Docker Stack
 
 In a development environment, you can download [Docker Desktop](https://www.docker.com/products/docker-desktop). On other systems, you will need to install Docker Engine and start the dameon.
 
 Once Docker has been started, you can issue ```docker compose up -d``` and the stack will start. Please see below for more information on using docker compose.
+
 ## Docker Compose Basics
 
 View the [docker compose documentation.](https://docs.docker.com/compose/)
