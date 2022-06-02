@@ -2,13 +2,13 @@
 
 This Docker stack initializes the following services:
 
-- Traefik for accepting incoming http/https requests and automating ssl certificates both in dev and production. The dev ssl certificate will generate a browser warning.
-- Nginx with caching for reverse proxying to the WordPress php-fpm service
-- WordPress php-fpm image for the WordPress installation. Themes and plugins can be stored in code under the ./wordpress directory.
-- WordPress CLI service for running wp-cli against WordPress.
-- MariaDB service for the database.
-- Redis for caching alongside php object cache.
-- Watchtower for automatically updating your docker images. Specify a minor version in the .env file to update minor releases or lock down upates by specifying a patch version. The .env-template file lists minor versions.
+- **Traefik** for accepting incoming http/https requests and automating ssl certificates both in dev and production. The dev ssl certificate will generate a browser warning.
+- **Nginx** with caching for reverse proxying to the WordPress php-fpm service
+- **WordPress** php-fpm image for the WordPress installation. Themes and plugins can be stored in code under the ./wordpress directory.
+- **WordPress CLI** service for running wp-cli against WordPress.
+- **MariaDB** service for the database.
+- **Redis** for caching alongside php object cache.
+- **Watchtower** for automatically updating your docker images. Specify a minor version in the .env file to update minor releases or lock down upates by specifying a patch version. The .env-template file lists minor versions.
 
 # Initial Setup
 
