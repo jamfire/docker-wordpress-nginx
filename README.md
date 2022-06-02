@@ -62,6 +62,17 @@ docker compose stop             # stop containers
 docker compose down             # remove containers
 ```
 
+## Scripts
+
+This repository includes various scripts located under ```./scripts``` to administer backups, etc.
+
+```
+sh ./scripts/backup-volumes.sh  # Backup traefik, wordpress, and database data
+
+sh ./scripts/restore-volumes.sh # Restore traefik, wordpress, and database data
+
+```
+
 ## Development Environment
 
 Using [Multipass](https://multipass.run/docs), it is easy to develop locally using this stack. Execute the included ```multipass.sh``` script to start an ubuntu based docker instance. This will install Docker with the compose plugin.
