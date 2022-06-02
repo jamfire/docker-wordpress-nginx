@@ -10,11 +10,13 @@ This Docker stack initializes the following services:
 - **Redis** for caching alongside php object cache.
 - **Watchtower** for automatically updating your docker images. Specify a minor version in the .env file to update minor releases or lock down upates by specifying a patch version. The .env-template file lists minor versions.
 
+This repository is meant to act as a template for setting up your WordPress stack.
+
 ## Initial Setup
 
-Step 1: Update your ```.env``` dotfile for the enviornment that your working in (development, staging, production).
+**Step 1**: Update your ```.env``` dotfile for the enviornment that your working in (development, staging, production).
 
-Step 2: Start docker and launch this stack using ```docker compose up -d```.
+**Step 2**: Start docker and launch this stack using ```docker compose up -d```.
 
 ## Step 1: Environment Configuration
 
