@@ -63,7 +63,7 @@ docker compose stop             # stop containers
 docker compose down             # remove containers
 ```
 
-## Scripts
+## Administration Scripts
 
 This repository includes various scripts located under ```./scripts``` to administer backups, etc. These scripts rely on a ```.env``` file in the root directory of your project. Scripts need to be run from the root diretory in order to read the ```.env``` file.
 
