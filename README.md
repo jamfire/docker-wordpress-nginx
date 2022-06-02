@@ -22,7 +22,7 @@ This repository is meant to act as a template for setting up your WordPress stac
 
 This stack can be configured for different environments using the ```.env``` dotfile. See ```.env-template``` for all variables available. Copy ```.env-template``` to ```.env``` and update as necessary. This is where you change database username and password, update nginx configuration, specify which docker image versions to use for each service, etc.
 
-## Configuration
+### Service Configuration
 
 Service configuration can be adjusted under ```/.docker```. You can adjust settings like php memory, nginx conf, mysql memory limit, and etc.
 
