@@ -53,7 +53,7 @@ docker compose up -d            # start services
 
 docker compose ps               # view service info
 
-docker compose logs nginx       # view nginx logs
+docker compose logs -f          # follow docker logs
 
 docker compose stop             # stop containers
 
