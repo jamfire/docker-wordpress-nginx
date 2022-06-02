@@ -10,7 +10,7 @@ This Docker stack initializes the following services:
 - **Redis** for caching alongside php object cache.
 - **Watchtower** for automatically updating your docker images. Specify a minor version in the .env file to update minor releases or lock down upates by specifying a patch version. The .env-template file lists minor versions.
 
-# Initial Setup
+## Initial Setup
 
 Step 1: Update your ```.env``` dotfile for the enviornment that your working in (development, staging, production).
 
@@ -19,6 +19,10 @@ Step 2: Start docker and launch this stack using ```docker compose up -d```.
 ## Step 1: Environment Configuration
 
 This stack can be configured for different environments using the ```.env``` dotfile. See ```.env-template``` for all variables available. Copy ```.env-template``` to ```.env``` and update as necessary. This is where you change database username and password, update nginx configuration, specify which docker image versions to use for each service, etc.
+
+## Configuration
+
+Service configuration can be adjusted under ```/.docker```. You can adjust settings like php memory, nginx conf, mysql memory limit, and etc.
 
 ## Step 2: Start Docker Stack
 
