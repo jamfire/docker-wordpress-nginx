@@ -74,7 +74,7 @@ sh ./scripts/restore-volumes.sh # Restore traefik, wordpress, and database data
 
 ```
 
-## Development Environment
+## Development Environment with Multipass
 
 Using [Multipass](https://multipass.run/docs), it is easy to develop locally using this stack. Execute the included ```multipass.sh``` script to start an ubuntu based docker instance. This will install Docker with the compose plugin.
 
