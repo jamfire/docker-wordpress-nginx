@@ -57,7 +57,7 @@ docker compose logs -f          # follow docker logs
 
 docker compose stop             # stop containers
 
-docker compose rm               # remove containers
+docker compose down             # remove containers
 ```
 
 ## Development Environment
@@ -82,5 +82,5 @@ docker-wordpress        Running           10.211.55.40     Ubuntu 21.10
 Add the ip/domain entry to /etc/hosts.
 
 ```
-10.211.55.40 wordpress.local
+10.211.55.40    wordpress.local
 ```
