@@ -14,3 +14,6 @@ wordpress/plugins/hello.php
 # wordpress themes
 wordpress/themes/twenty*
 !wordpress/themes/twentytwentytwo
+
+# backups
+backups

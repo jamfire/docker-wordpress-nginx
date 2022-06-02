@@ -63,7 +63,7 @@ services:
     networks:
       traefik:
       wordpress:
-        ipv4_address: 10.1.0.100 # static ip for loopback on reverse proxy
+        ipv4_address: 10.5.0.100 # static ip for loopback on reverse proxy
 
   # WordPress FPM
   # This is the WordPress service with php-fpm. It could be replaced with the
@@ -94,7 +94,7 @@ services:
       - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
       - ~/.ssh/id_rsa/:/root/.ssh/id_rsa
     extra_hosts:
-      - ${NGINX_HOST:-wordpress.local}:10.1.0.100
+      - ${NGINX_HOST:-wordpress.local}:10.5.0.100
     networks:
       - wordpress
 
@@ -132,6 +132,7 @@ services:
     image: mariadb:${MARIADB_VERSION:-10.7}
     volumes:
       - db_data:/var/lib/mysql
+      - db_socket:/var/lib/mysqld
       - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     restart: always
     environment:
@@ -140,7 +141,7 @@ services:
       MYSQL_USER: ${DB_USER:-wordpress}
       MYSQL_PASSWORD: ${DB_PASS:-password}
     healthcheck:
-      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$DB_ROOT_PASSWORD
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=$${DB_ROOT_PASSWORD:-password}
       interval: 5s
       retries: 10
     networks:
@@ -170,16 +171,14 @@ services:
 volumes:
   db_data:
     driver: local
-    name: ${COMPOSE_PROJECT_NAME:-wordpress}_wordpress-db-data
+  db_socket:
+    driver: local
   wp_data:
     driver: local
-    name: ${COMPOSE_PROJECT_NAME:-wordpress}_wordpress-data
   redis_data:
     driver: local
-    name: ${COMPOSE_PROJECT_NAME:-wordpress}_wordpress-redis
   le_data:
     driver: local
-    name: ${COMPOSE_PROJECT_NAME:-wordpress}_letsencrypt
 networks:
   traefik:
     driver: bridge
@@ -190,4 +189,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 10.1.0.0/24
+        - subnet: 10.5.0.0/24

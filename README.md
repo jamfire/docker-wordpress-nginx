@@ -104,5 +104,6 @@ docker compose logs -f              # view the logs
 You can also run the commands from your host machine but the syntax is much longer:
 
 ```
-multipass exec docker-wordpress -- bash -c 'cd /home/ubuntu/wordpress && docker compose logs -f'
+multipass exec docker-wordpress -- \
+    bash -c 'cd /home/ubuntu/wordpress && docker compose logs -f'
 ```
