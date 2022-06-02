@@ -42,7 +42,7 @@ services:
   nginx:
     depends_on:
       - wordpress
-    image: nginx:${NGINX_VERSION:-1.21}
+    image: nginx:${NGINX_VERSION:-1.21-alpine}
     restart: always
     environment:
       - NGINX_HOST=${NGINX_HOST:-wordpress.local}
@@ -63,7 +63,7 @@ services:
     networks:
       traefik:
       wordpress:
-        ipv4_address: 10.1.0.100
+        ipv4_address: 10.1.0.100 # static ip for loopback on reverse proxy
 
   # WordPress FPM
   # This is the WordPress service with php-fpm. It could be replaced with the
@@ -80,7 +80,7 @@ services:
       WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
       WORDPRESS_DB_USER: ${DB_USER:-wordpress}
       WORDPRESS_DB_PASSWORD: ${DB_PASS:-password}
-      WORDPRESS_DEBUG: ${WP_DEBUG:-1}
+      WORDPRESS_DEBUG: ${WP_DEBUG:-0}
       WORDPRESS_CONFIG_EXTRA: |
         /* Redis Ojbect Cache */
         define( 'WP_REDIS_HOST', 'redis' );
@@ -149,7 +149,7 @@ services:
   # Redis
   # This stack uses Redis as a Database Object Cache for WordPress
   redis:
-    image: redis:${REDIS_VERSION:-alpine}
+    image: redis:${REDIS_VERSION:-7.0-alpine}
     restart: always
     volumes:
       - redis_data:/data
@@ -159,27 +159,27 @@ services:
   # Watchtower
   # Automatically pull new docker images as they're updated. This is useful for
   # private sites behind a VPN that don't have public access to tools like webhooks
-  # for deploying changes.
-  # watchtower:
-  #   image: containrrr/watchtower:latest
-  #   restart: always
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   command: --interval 30
+  # for deploying changes. It's important to lock down your versions to major ranges.
+  watchtower:
+    image: containrrr/watchtower:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
 
 volumes:
   db_data:
     driver: local
-    name: ${PROJECT:-wordpress}_wordpress-db-data
+    name: ${COMPOSE_PROJECT_NAME:-wordpress}_wordpress-db-data
   wp_data:
     driver: local
-    name: ${PROJECT:-wordpress}_wordpress-data
+    name: ${COMPOSE_PROJECT_NAME:-wordpress}_wordpress-data
   redis_data:
     driver: local
-    name: ${PROJECT:-wordpress}_wordpress-redis
+    name: ${COMPOSE_PROJECT_NAME:-wordpress}_wordpress-redis
   le_data:
     driver: local
-    name: ${PROJECT:-wordpress}_letsencrypt
+    name: ${COMPOSE_PROJECT_NAME:-wordpress}_letsencrypt
 networks:
   traefik:
     driver: bridge
